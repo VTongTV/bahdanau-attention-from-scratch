@@ -1,0 +1,33 @@
+# paper source and planning docs
+arXiv-1409.0473v7/
+arXiv-1409.0473v7.tar.gz
+*.pdf
+AGENTS.md
+timetable.md
+PLAN.md
+AUDIT.md
+INITIATION_PROMPT.md
+*.plan.md
+
+# data and runs
+data/
+experiments/runs/
+experiments/artifacts/
+*.ckpt
+*.pt
+*.pth
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.egg-info/
+build/
+dist/
+
+# os and editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
