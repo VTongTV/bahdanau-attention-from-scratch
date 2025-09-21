@@ -10,7 +10,7 @@ INITIATION_PROMPT.md
 *.plan.md
 
 # data and runs
-data/
+/data/
 experiments/runs/
 experiments/artifacts/
 *.ckpt
