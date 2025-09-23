@@ -44,10 +44,14 @@ class GRUCell(nn.Module):
         h_tilde = torch.tanh(h_in + self.u(state * r))
         return (1 - z) * state + z * h_tilde
 
+    def recurrent_weights(self):
+        """the recurrent matrices u u_z u_r for orthogonal init."""
+        return [self.u.weight, self.u_z.weight, self.u_r.weight]
+
     def init_parameters(self) -> None:
         """orthogonal recurrent matrices. gaussian input and context."""
-        for u in (self.u, self.u_z, self.u_r):
-            orthogonal(u.weight)
+        for u in self.recurrent_weights():
+            orthogonal(u)
         for lin in (self.w, self.w_z, self.w_r, self.c, self.c_z, self.c_r):
             if lin is not None:
                 gaussian(lin.weight, WEIGHT_INIT_STD)
