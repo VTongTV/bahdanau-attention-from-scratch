@@ -31,15 +31,18 @@ def default(param) -> None:
 def apply_paper_init(module) -> None:
     """init every parameter of a module tree per appendix b.1.
 
-    modules with their own init_parameters use that rule.
+    a module with its own init_parameters takes over its subtree.
     anything else falls to the default rule.
     """
-    for m in module.modules():
-        if m is module:
-            continue
+
+    def walk(m):
         init_parameters = getattr(m, "init_parameters", None)
         if init_parameters is not None:
             init_parameters()
-        else:
-            for p in m.parameters(recurse=False):
-                default(p)
+            return
+        for p in m.parameters(recurse=False):
+            default(p)
+        for child in m.children():
+            walk(child)
+
+    walk(module)

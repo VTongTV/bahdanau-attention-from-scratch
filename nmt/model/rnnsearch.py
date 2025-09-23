@@ -22,7 +22,8 @@ class RNNsearch(nn.Module):
         """apply the paper init scheme over every child module."""
         from nmt.model.params import apply_paper_init
 
-        apply_paper_init(self)
+        for child in self.children():
+            apply_paper_init(child)
 
     def decoder_state(self):
         """current decoder state or a fresh zero state."""
