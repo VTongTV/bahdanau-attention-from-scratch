@@ -17,6 +17,11 @@ class Alignment(nn.Module):
         self.v_a = nn.Parameter(torch.zeros(config.alignment_hidden))
         self._cache = None
 
+    def cache(self, annotations):
+        """precompute u_a h_j once per encoder run."""
+        self._cache = self.u_a(annotations)
+        return self._cache
+
     def score(self, prev_state):
         """alignment scores for every source step. (batch, src_len)."""
         energy = self.w_a(prev_state).unsqueeze(1) + self._cache
