@@ -18,6 +18,11 @@ class Encoder(nn.Module):
         self.bwd = ContextFreeCell(config.embedding, config.hidden)
 
     def forward(self, src_ids):
+        """annotations (batch, seq, 2*hidden) over the source words."""
+        forward, backward = self.states(src_ids)
+        return torch.cat([forward, backward], dim=-1)
+
+    def states(self, src_ids):
         """separate forward and backward state sequences."""
         batch, seq = src_ids.shape
         emb = self.embedding(src_ids)
