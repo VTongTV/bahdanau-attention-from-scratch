@@ -27,6 +27,7 @@ class Attention(nn.Module):
             scores = scores.masked_fill(~src_mask, float("-inf"))
         weights = torch.softmax(scores, dim=-1)
         context = torch.einsum("bt,btd->bd", weights, self._annotations)
+        self.last_weights = weights
         return context, weights
 
     def apply_initialization(self):
