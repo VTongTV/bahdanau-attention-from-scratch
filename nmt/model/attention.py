@@ -20,9 +20,11 @@ class Attention(nn.Module):
         self._annotations = annotations
         self.alignment.cache(annotations)
 
-    def forward(self, prev_state):
+    def forward(self, prev_state, src_mask=None):
         """context (batch, 2n) and weights (batch, src_len)."""
         scores = self.alignment.score(prev_state)
+        if src_mask is not None:
+            scores = scores.masked_fill(~src_mask, float("-inf"))
         weights = torch.softmax(scores, dim=-1)
         context = torch.einsum("bt,btd->bd", weights, self._annotations)
         return context, weights
