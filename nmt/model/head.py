@@ -27,3 +27,25 @@ class MaxoutHead(nn.Module):
         for lin in (self.u_o, self.v_o, self.c_o):
             gaussian(lin.weight, WEIGHT_INIT_STD)
         zero(self.b)
+
+
+class DeepHead(nn.Module):
+    """maxout layer followed by the softmax over the shortlist."""
+
+    def __init__(self, config: ExperimentConfig):
+        super().__init__()
+        self.maxout = MaxoutHead(config)
+        self.w_o = nn.Linear(config.maxout, config.vocab_size, bias=False)
+
+    def forward(self, state, embedding, context):
+        """logits over the vocabulary. (batch, vocab)."""
+        return self.w_o(self.maxout(state, embedding, context))
+
+    def log_probs(self, state, embedding, context):
+        """log softmax over the shortlist."""
+        return torch.log_softmax(self.forward(state, embedding, context), dim=-1)
+
+    def init_parameters(self) -> None:
+        """paper init for both layers."""
+        self.maxout.init_parameters()
+        gaussian(self.w_o.weight, WEIGHT_INIT_STD)
