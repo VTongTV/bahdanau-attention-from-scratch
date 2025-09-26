@@ -21,7 +21,7 @@ class RNNsearch(nn.Module):
         self.decoder = Decoder(config)
         self.head = DeepHead(config)
 
-    def forward(self, src_ids, tgt_ids):
+    def forward(self, src_ids, tgt_ids, src_mask=None):
         """logits (batch, tgt_len, vocab) over the padded target."""
         annotations = self.encoder(src_ids)
         backward_first = annotations[:, 0, -self.config.hidden:]
@@ -30,10 +30,15 @@ class RNNsearch(nn.Module):
         emb = self.decoder.embedding(tgt_ids)
         logits = []
         for t in range(tgt_ids.shape[1]):
-            context, _ = self.attention(state)
+            context, _ = self.attention(state, src_mask)
             logits.append(self.head.forward(state, emb[:, t], context))
             state = self.decoder.step(emb[:, t], state, context)
         return torch.stack(logits, dim=1)
+
+    def reset_state(self) -> None:
+        """drop the attention cache and decoder state between sentences."""
+        self.attention._annotations = None
+        self.attention.alignment._cache = None
 
     def init_parameters(self) -> None:
         """paper init over the whole stack (appendix b.1)."""
