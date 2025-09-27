@@ -3,8 +3,7 @@
 import torch
 
 from nmt.config import ExperimentConfig
-from nmt.data.collate import collate
-from nmt.data.iterate import shuffled_order
+from nmt.data.iterate import epoch_batches, shuffled_order
 from nmt.train.clip import clip_gradients
 from nmt.train.loss import masked_nll
 
@@ -34,11 +33,13 @@ class Trainer:
         """one sequential pass over the shuffled sentences."""
         order = shuffled_order(len(store), self.config.seed + epoch)
         losses = []
-        for start in range(0, len(order), self.config.minibatch):
-            rows = order[start:start + self.config.minibatch]
-            src_rows = [store.src_row(i) for i in rows]
-            tgt_rows = [store.tgt_row(i) for i in rows]
-            loss = self.train_step(collate(src_rows, tgt_rows))
+        for batch in epoch_batches(
+            store,
+            order,
+            self.config.minibatch,
+            self.config.rebucket_pool,
+        ):
+            loss = self.train_step(batch)
             losses.append(loss)
             if self.updates % log_every == 0:
                 print(f"step {self.updates} loss {loss:.4f}", flush=True)
