@@ -12,6 +12,11 @@ def token_log_probs(logits, targets):
 
 def masked_nll(logits, targets, mask):
     """minibatch cost: mean nll over the sentences in the batch."""
+    return sentence_nlls(logits, targets, mask).mean()
+
+
+def sentence_nlls(logits, targets, mask):
+    """per-sentence nll, averaged over that sentence's valid words."""
     per_token = -token_log_probs(logits, targets) * mask
     counts = mask.sum(dim=-1).clamp(min=1)
-    return (per_token.sum(dim=-1) / counts).mean()
+    return per_token.sum(dim=-1) / counts
