@@ -7,10 +7,12 @@ import torch
 
 from nmt.args import config_from_args
 from nmt.config import ExperimentConfig
+from nmt.data.iterate import shuffled_order
 from nmt.data.prepare import Store
 from nmt.model.rnnencdec import RNNencdec
 from nmt.model.rnnsearch import RNNsearch
-from nmt.train.checkpoint import save_checkpoint
+from nmt.train.checkpoint import load_checkpoint, save_checkpoint
+from nmt.train.earlystop import EarlyStopper
 from nmt.train.optimizer import Adadelta
 from nmt.train.trainer import Trainer
 
@@ -21,10 +23,10 @@ class CsvLog:
     def __init__(self, path):
         self.file = open(path, "w", newline="")
         self.writer = csv.writer(self.file)
-        self.writer.writerow(["epoch", "update", "train_nll"])
+        self.writer.writerow(["epoch", "update", "train_nll", "val_nll"])
 
-    def row(self, epoch, update, train_nll):
-        self.writer.writerow([epoch, update, f"{train_nll:.4f}"])
+    def row(self, epoch, update, train_nll, val_nll):
+        self.writer.writerow([epoch, update, f"{train_nll:.4f}", f"{val_nll:.4f}"])
         self.file.flush()
 
     def close(self):
@@ -45,9 +47,9 @@ def load_stores(config: ExperimentConfig):
 
 
 def run(config: ExperimentConfig) -> None:
-    """the training loop: epochs, checks, checkpoints."""
+    """the training loop: epochs, dev checks, checkpoints."""
     torch.manual_seed(config.seed)
-    train_store, _ = load_stores(config)
+    train_store, dev_store = load_stores(config)
     run_dir = Path(config.run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
     model = build_model(config)
@@ -55,11 +57,19 @@ def run(config: ExperimentConfig) -> None:
     optimizer = Adadelta(model.parameters(), config.adadelta_rho, config.adadelta_eps)
     trainer = Trainer(model, optimizer, config)
     log = CsvLog(run_dir / "train.csv")
+    stopper = EarlyStopper(config.patience)
+    dev_order = shuffled_order(len(dev_store), config.seed)
     for epoch in range(config.epochs):
         train_nll = trainer.run_epoch(train_store, epoch, config.log_every)
         print(f"epoch {epoch} train nll {train_nll:.4f}", flush=True)
-        log.row(epoch, trainer.updates, train_nll)
+        dev_nll = trainer.validate(dev_store, dev_order)
+        log.row(epoch, trainer.updates, train_nll, dev_nll)
         save_checkpoint(run_dir / "checkpoint.last.pt", model, optimizer, config, trainer.updates)
+        if dev_nll < stopper.best:
+            save_checkpoint(run_dir / "checkpoint.best.pt", model, optimizer, config, trainer.updates)
+        if stopper.observe(dev_nll):
+            print(f"early stop at epoch {epoch} best dev nll {stopper.best:.4f}", flush=True)
+            break
     log.close()
 
 
