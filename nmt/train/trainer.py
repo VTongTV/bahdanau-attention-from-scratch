@@ -44,3 +44,22 @@ class Trainer:
             if self.updates % log_every == 0:
                 print(f"step {self.updates} loss {loss:.4f}", flush=True)
         return sum(losses) / len(losses)
+
+    def validate(self, store, order):
+        """dev nll in no-grad mode over the given sentences."""
+        self.model.eval()
+        total = 0.0
+        seen = 0
+        for batch in epoch_batches(
+            store,
+            order,
+            self.config.minibatch,
+            self.config.rebucket_pool,
+        ):
+            src, src_mask, tgt, tgt_mask = batch
+            with torch.no_grad():
+                logits = self.model(src, tgt, src_mask)
+            total += masked_nll(logits, tgt, tgt_mask).item() * src.shape[0]
+            seen += src.shape[0]
+        self.model.train()
+        return total / max(seen, 1)
