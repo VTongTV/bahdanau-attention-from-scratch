@@ -1,6 +1,7 @@
 """train.py: the cli entry point for a training run."""
 
 import csv
+import time
 from pathlib import Path
 
 import torch
@@ -59,9 +60,15 @@ def run(config: ExperimentConfig) -> None:
     log = CsvLog(run_dir / "train.csv")
     stopper = EarlyStopper(config.patience)
     dev_order = shuffled_order(len(dev_store), config.seed)
+    started = time.time()
     for epoch in range(config.epochs):
         train_nll = trainer.run_epoch(train_store, epoch, config.log_every)
-        print(f"epoch {epoch} train nll {train_nll:.4f}", flush=True)
+        elapsed = time.time() - started
+        rate = config.minibatch * trainer.updates / max(elapsed, 1e-9)
+        remaining = max(config.epochs - epoch - 1, 0) * (len(train_store) // config.minibatch)
+        eta = remaining * config.minibatch / max(rate, 1e-9)
+        print(f"epoch {epoch} train nll {train_nll:.4f} "
+              f"{rate:.0f} sentences/sec eta {eta:.0f}s", flush=True)
         dev_nll = trainer.validate(dev_store, dev_order)
         log.row(epoch, trainer.updates, train_nll, dev_nll)
         save_checkpoint(run_dir / "checkpoint.last.pt", model, optimizer, config, trainer.updates)
