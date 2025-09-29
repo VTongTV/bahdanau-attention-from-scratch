@@ -26,9 +26,13 @@ def save_checkpoint(path, model, optimizer, config: ExperimentConfig, update: in
 def load_checkpoint(path, model, optimizer, config: ExperimentConfig):
     """restore a training state from a checkpoint file."""
     data = torch.load(path, weights_only=False)
+    saved = ExperimentConfig.from_dict(data["config"])
+    if saved.model != config.model or saved.hidden != config.hidden:
+        raise ValueError("checkpoint architecture does not match the cli config")
+    if saved.vocab_size != config.vocab_size:
+        raise ValueError("checkpoint vocabulary does not match the cli config")
     model.load_state_dict(data["model"])
     if optimizer is not None:
         optimizer.load_state_dict(data["optimizer"])
-    saved = ExperimentConfig.from_dict(data["config"])
     model.config = config
     return data["update"], saved

@@ -57,15 +57,20 @@ def run(config: ExperimentConfig) -> None:
     model.init_parameters()
     optimizer = Adadelta(model.parameters(), config.adadelta_rho, config.adadelta_eps)
     trainer = Trainer(model, optimizer, config)
+    start_update = 0
+    if config.resume:
+        start_update, _ = load_checkpoint(config.resume, model, optimizer, config)
     log = CsvLog(run_dir / "train.csv")
     stopper = EarlyStopper(config.patience)
     dev_order = shuffled_order(len(dev_store), config.seed)
     started = time.time()
-    for epoch in range(config.epochs):
+    batches_per_epoch = max(len(train_store) // config.minibatch, 1)
+    start_epoch = start_update // batches_per_epoch
+    for epoch in range(start_epoch, config.epochs):
         train_nll = trainer.run_epoch(train_store, epoch, config.log_every)
         elapsed = time.time() - started
         rate = config.minibatch * trainer.updates / max(elapsed, 1e-9)
-        remaining = max(config.epochs - epoch - 1, 0) * (len(train_store) // config.minibatch)
+        remaining = max(config.epochs - epoch - 1, 0) * batches_per_epoch
         eta = remaining * config.minibatch / max(rate, 1e-9)
         print(f"epoch {epoch} train nll {train_nll:.4f} "
               f"{rate:.0f} sentences/sec eta {eta:.0f}s", flush=True)
