@@ -19,7 +19,7 @@ class RNNencdec(nn.Module):
         self.decoder = Decoder(config)
         self.head = DeepHead(config)
 
-    def forward(self, src_ids, tgt_ids):
+    def forward(self, src_ids, tgt_ids, src_mask=None):
         """logits (batch, tgt_len, vocab) over the padded target."""
         batch = src_ids.shape[0]
         annotations = self.encoder(src_ids)
