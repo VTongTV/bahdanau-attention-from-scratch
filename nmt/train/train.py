@@ -54,6 +54,8 @@ def run(config: ExperimentConfig) -> None:
     train_store, dev_store = load_stores(config)
     run_dir = Path(config.run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
+    print(f"seed {config.seed} model {config.model} max_len {config.max_len} "
+          f"hidden {config.hidden} vocab {config.vocab_size}", flush=True)
     model = build_model(config)
     model.init_parameters()
     optimizer = Adadelta(model.parameters(), config.adadelta_rho, config.adadelta_eps)
