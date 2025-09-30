@@ -15,6 +15,7 @@ from nmt.model.rnnsearch import RNNsearch
 from nmt.train.checkpoint import load_checkpoint, save_checkpoint
 from nmt.train.earlystop import EarlyStopper
 from nmt.train.optimizer import Adadelta
+from nmt.train.snapshot import BestSnapshot
 from nmt.train.trainer import Trainer
 
 
@@ -62,6 +63,10 @@ def run(config: ExperimentConfig) -> None:
         start_update, _ = load_checkpoint(config.resume, model, optimizer, config)
     log = CsvLog(run_dir / "train.csv")
     stopper = EarlyStopper(config.patience)
+    snapshot = BestSnapshot(
+        run_dir / "checkpoint.best.pt",
+        lambda p: save_checkpoint(p, model, optimizer, config, trainer.updates),
+    )
     dev_order = shuffled_order(len(dev_store), config.seed)
     started = time.time()
     batches_per_epoch = max(len(train_store) // config.minibatch, 1)
@@ -77,8 +82,9 @@ def run(config: ExperimentConfig) -> None:
         dev_nll = trainer.validate(dev_store, dev_order)
         log.row(epoch, trainer.updates, train_nll, dev_nll)
         save_checkpoint(run_dir / "checkpoint.last.pt", model, optimizer, config, trainer.updates)
-        if dev_nll < stopper.best:
-            save_checkpoint(run_dir / "checkpoint.best.pt", model, optimizer, config, trainer.updates)
+        if snapshot.observe(dev_nll, trainer.updates):
+            print(f"best dev nll {snapshot.best:.4f} at update {snapshot.best_update}",
+                  flush=True)
         if stopper.observe(dev_nll):
             print(f"early stop at epoch {epoch} best dev nll {stopper.best:.4f}", flush=True)
             break

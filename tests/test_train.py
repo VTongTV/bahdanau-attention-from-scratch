@@ -11,6 +11,7 @@ from nmt.data.prepare import Store
 from nmt.model.rnnencdec import RNNencdec
 from nmt.train.checkpoint import load_checkpoint, save_checkpoint
 from nmt.train.optimizer import Adadelta
+from nmt.train.snapshot import BestSnapshot
 from nmt.train.trainer import Trainer
 
 
@@ -48,6 +49,18 @@ def test_adadelta_statistics_reported():
     opt.step()
     g, dx, scale = opt.statistics()
     assert g > 0 and dx > 0 and scale > 0
+
+
+def test_best_snapshot_saves_only_on_improvement(tmp_path):
+    calls = []
+    snapshot = BestSnapshot(tmp_path / "best.pt", lambda p: calls.append(p))
+    assert snapshot.observe(5.0, 10)
+    assert not snapshot.observe(6.0, 20)
+    assert snapshot.observe(4.0, 30)
+    assert len(calls) == 2
+    assert calls[0] == tmp_path / "best.pt"
+    assert snapshot.best == 4.0
+    assert snapshot.best_update == 30
 
 
 def test_resume_config_fidelity(tmp_path):
