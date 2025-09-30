@@ -30,3 +30,20 @@ class Adadelta(torch.optim.Optimizer):
                 scaled = grad.mul((acc_dx + eps).sqrt().div((acc_g + eps).sqrt()))
                 p.add_(-scaled)
                 acc_dx.mul_(rho).addcmul_(scaled, scaled, value=1 - rho)
+
+    def statistics(self):
+        """mean rms of the gradient and update accumulators."""
+        rms_g = []
+        rms_dx = []
+        for group in self.param_groups:
+            for p in group["params"]:
+                state = self.state.get(p)
+                if not state:
+                    continue
+                rms_g.append(state["acc_g"].mean().sqrt().item())
+                rms_dx.append(state["acc_dx"].mean().sqrt().item())
+        if not rms_g:
+            return 0.0, 0.0, 0.0
+        g = sum(rms_g) / len(rms_g)
+        dx = sum(rms_dx) / len(rms_dx)
+        return g, dx, dx / max(g, 1e-12)

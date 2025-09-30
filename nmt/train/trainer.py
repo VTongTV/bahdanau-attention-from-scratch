@@ -42,7 +42,10 @@ class Trainer:
             loss = self.train_step(batch)
             losses.append(loss)
             if self.updates % log_every == 0:
-                print(f"step {self.updates} loss {loss:.4f}", flush=True)
+                rms_g, rms_dx, scale = self.optimizer.statistics()
+                print(f"step {self.updates} loss {loss:.4f} "
+                      f"rms_g {rms_g:.5f} rms_dx {rms_dx:.5f} scale {scale:.4f}",
+                      flush=True)
         return sum(losses) / len(losses)
 
     def validate(self, store, order):

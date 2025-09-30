@@ -39,6 +39,17 @@ def test_rnnencdec_trains_end_to_end():
     assert after < before
 
 
+def test_adadelta_statistics_reported():
+    lin = torch.nn.Linear(4, 4)
+    opt = Adadelta(lin.parameters())
+    g, dx, scale = opt.statistics()
+    assert g == 0.0 and dx == 0.0 and scale == 0.0
+    lin(torch.randn(4, 4)).sum().backward()
+    opt.step()
+    g, dx, scale = opt.statistics()
+    assert g > 0 and dx > 0 and scale > 0
+
+
 def test_resume_config_fidelity(tmp_path):
     warnings.filterwarnings("ignore")
     torch.manual_seed(5)
