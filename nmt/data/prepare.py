@@ -1,10 +1,12 @@
 """bake token ids and vocab into serialized stores."""
 
+import itertools
 from pathlib import Path
 
 import numpy as np
 import torch
 
+from nmt.config import TEST_MODE_EVAL, TEST_MODE_TRAIN
 from nmt.data.filter import filter_by_length, wrap
 from nmt.data.split import dev_pairs, test_pairs
 from nmt.data.wmt14 import train_pairs
@@ -97,10 +99,17 @@ def prepare(config, out_dir, limit=None):
     """build vocabularies and stores for the train dev and test splits."""
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    if config.test_mode:
+        limit = limit or TEST_MODE_TRAIN
     train = list(train_filtered(train_pairs(config.data_dir, limit), config.max_len))
     src_vocab, tgt_vocab = build_vocabs(train, config.vocab_size)
     src_vocab.save(out / "vocab.src")
     tgt_vocab.save(out / "vocab.tgt")
     save_store(train, src_vocab, tgt_vocab, out / "train.npz")
-    save_store(eval_wrapped(dev_pairs(config.data_dir)), src_vocab, tgt_vocab, out / "dev.npz")
-    save_store(eval_wrapped(test_pairs(config.data_dir)), src_vocab, tgt_vocab, out / "test.npz")
+    dev = eval_wrapped(dev_pairs(config.data_dir))
+    test = eval_wrapped(test_pairs(config.data_dir))
+    if config.test_mode:
+        dev = itertools.islice(dev, TEST_MODE_EVAL)
+        test = itertools.islice(test, TEST_MODE_EVAL)
+    save_store(dev, src_vocab, tgt_vocab, out / "dev.npz")
+    save_store(test, src_vocab, tgt_vocab, out / "test.npz")

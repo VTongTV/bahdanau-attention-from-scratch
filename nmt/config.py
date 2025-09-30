@@ -25,6 +25,10 @@ REBUCKET_POOL = 1600
 BEAM_SIZE = 10
 UNK_SUPPRESS = True
 
+# test-mode subset sizes
+TEST_MODE_TRAIN = 640
+TEST_MODE_EVAL = 128
+
 # initialization (appendix b.1)
 ALIGNMENT_INIT_STD = 0.001
 WEIGHT_INIT_STD = 0.01
@@ -65,6 +69,7 @@ class ExperimentConfig:
     eval_every: int = 100
     patience: int = 3
     resume: str = ""
+    test_mode: bool = False
 
     def to_dict(self) -> dict:
         """return the config as a plain dict."""

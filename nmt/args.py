@@ -34,6 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--eval-every", type=int, default=None)
     p.add_argument("--patience", type=int, default=None)
     p.add_argument("--resume", default=None)
+    p.add_argument("--test-mode", action="store_true")
     return p
 
 

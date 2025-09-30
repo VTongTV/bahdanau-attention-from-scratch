@@ -9,7 +9,7 @@ from nmt.data.bucket import cut_batches, fetch_pool, rebucket, sort_by_length
 from nmt.data.collate import collate
 from nmt.data.filter import filter_by_length, unwrap, wrap
 from nmt.data.iterate import epoch_batches, shuffled_order
-from nmt.data.prepare import Store, eval_wrapped, save_store, train_filtered
+from nmt.data.prepare import Store, eval_wrapped, prepare, save_store, train_filtered
 from nmt.data.split import dev_pairs
 from nmt.vocab.vocabulary import Vocab
 
@@ -144,3 +144,14 @@ def test_config_reads_defaults():
     c = ExperimentConfig()
     assert c.minibatch == 80
     assert c.rebucket_pool == 1600
+
+
+def test_prepare_test_mode_slices(tmp_path):
+    config = ExperimentConfig(test_mode=True, vocab_size=100, max_len=12)
+    prepare(config, tmp_path)
+    train = Store.load(tmp_path / "train.npz")
+    dev = Store.load(tmp_path / "dev.npz")
+    test = Store.load(tmp_path / "test.npz")
+    assert len(train) <= 640
+    assert len(dev) == 128
+    assert len(test) == 128
