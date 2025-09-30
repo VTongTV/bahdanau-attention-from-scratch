@@ -146,6 +146,15 @@ def test_config_reads_defaults():
     assert c.rebucket_pool == 1600
 
 
+def test_iterate_carries_tail_across_pools():
+    store = make_store(250)
+    order = shuffled_order(len(store), seed=1)
+    batches = list(epoch_batches(store, order, batch_size=60, pool_size=200))
+    seen = sum(b[0].shape[0] for b in batches)
+    assert seen == 250
+    assert all(b[0].shape[0] <= 60 for b in batches)
+
+
 def test_prepare_test_mode_slices(tmp_path):
     config = ExperimentConfig(test_mode=True, vocab_size=100, max_len=12)
     prepare(config, tmp_path)
