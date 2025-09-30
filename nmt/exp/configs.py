@@ -21,3 +21,16 @@ def rnnsearch_30():
         maxout=MAXOUT,
         vocab_size=VOCAB,
     )
+
+
+def rnnencdec_30():
+    """rnnencdec trained on pairs up to 30 words. same dims as search."""
+    return ExperimentConfig(
+        model="rnnencdec",
+        max_len=30,
+        hidden=HIDDEN,
+        embedding=EMBEDDING,
+        alignment_hidden=ALIGNMENT_HIDDEN,
+        maxout=MAXOUT,
+        vocab_size=VOCAB,
+    )
