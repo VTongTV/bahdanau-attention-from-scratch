@@ -11,9 +11,10 @@ def decode_all(model, store, config, out_path, text_vocab=None):
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     special = special_ids(text_vocab) if text_vocab else {"bos": 0, "eos": 1, "unk": 2}
+    device = next(model.parameters()).device
     with open(out, "w", encoding="utf-8") as fh:
         for i in range(len(store)):
-            src = store.src_row(i).reshape(1, -1)
+            src = store.src_row(i).reshape(1, -1).to(device)
             tokens = beam_search(
                 model,
                 src,

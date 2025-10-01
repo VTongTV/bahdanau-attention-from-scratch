@@ -17,6 +17,7 @@ from nmt.train.earlystop import EarlyStopper
 from nmt.train.optimizer import Adadelta
 from nmt.train.snapshot import BestSnapshot
 from nmt.train.trainer import Trainer
+from nmt.utils.device import pick_device
 
 
 class CsvLog:
@@ -50,14 +51,16 @@ def load_stores(config: ExperimentConfig):
 
 def run(config: ExperimentConfig) -> None:
     """the training loop: epochs, dev checks, checkpoints."""
+    device = pick_device(config.device)
     torch.manual_seed(config.seed)
     train_store, dev_store = load_stores(config)
     run_dir = Path(config.run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
-    print(f"seed {config.seed} model {config.model} max_len {config.max_len} "
+    print(f"seed {config.seed} device {device} model {config.model} max_len {config.max_len} "
           f"hidden {config.hidden} vocab {config.vocab_size}", flush=True)
     model = build_model(config)
     model.init_parameters()
+    model.to(device)
     optimizer = Adadelta(model.parameters(), config.adadelta_rho, config.adadelta_eps)
     trainer = Trainer(model, optimizer, config)
     start_update = 0

@@ -17,9 +17,18 @@ class Trainer:
         self.config = config
         self.updates = 0
 
+    def _device(self):
+        """the device the model parameters live on."""
+        return next(self.model.parameters()).device
+
     def train_step(self, batch):
         """one sgd update over a padded minibatch."""
         src, src_mask, tgt, tgt_mask = batch
+        device = self._device()
+        src = src.to(device)
+        tgt = tgt.to(device)
+        src_mask = src_mask.to(device)
+        tgt_mask = tgt_mask.to(device)
         self.optimizer.zero_grad()
         logits = self.model(src, tgt, src_mask)
         loss = masked_nll(logits, tgt[:, 1:], tgt_mask[:, 1:])
@@ -60,6 +69,11 @@ class Trainer:
             self.config.rebucket_pool,
         ):
             src, src_mask, tgt, tgt_mask = batch
+            device = self._device()
+            src = src.to(device)
+            tgt = tgt.to(device)
+            src_mask = src_mask.to(device)
+            tgt_mask = tgt_mask.to(device)
             with torch.no_grad():
                 logits = self.model(src, tgt, src_mask)
             total += masked_nll(logits, tgt[:, 1:], tgt_mask[:, 1:]).item() * src.shape[0]
