@@ -6,7 +6,7 @@ from nmt.decode.translate import prepare_batch
 from nmt.decode.unk import mask_unk
 
 
-def beam_search(model, src_ids, src_mask=None, bos_id=1, eos_id=2, unk_id=0,
+def beam_search(model, src_ids, src_mask=None, bos_id=0, eos_id=1, unk_id=2,
                 beam_size=10, unk_suppress=False, max_len=100):
     """decode one source keeping the top beam_size paths."""
     state, context_of = prepare_batch(model, src_ids, src_mask)
