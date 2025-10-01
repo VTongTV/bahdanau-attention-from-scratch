@@ -3,6 +3,7 @@
 import torch
 
 from nmt.decode.translate import prepare_batch
+from nmt.decode.unk import mask_unk
 
 
 def greedy(model, src_ids, src_mask=None, bos_id=1, eos_id=2, unk_id=0,
@@ -14,8 +15,7 @@ def greedy(model, src_ids, src_mask=None, bos_id=1, eos_id=2, unk_id=0,
     for _ in range(max_len):
         logits = model.head.forward(state, emb, context_of(state, src_mask))
         if unk_suppress and unk_id is not None:
-            logits = logits.clone()
-            logits[:, unk_id] = float("-inf")
+            logits = mask_unk(logits, unk_id)
         nxt = logits.argmax(dim=-1).item()
         tokens.append(nxt)
         if nxt == eos_id:

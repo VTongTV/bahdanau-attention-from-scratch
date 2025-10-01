@@ -3,6 +3,7 @@
 import torch
 
 from nmt.decode.translate import prepare_batch
+from nmt.decode.unk import mask_unk
 
 
 def beam_search(model, src_ids, src_mask=None, bos_id=1, eos_id=2, unk_id=0,
@@ -19,10 +20,10 @@ def beam_search(model, src_ids, src_mask=None, bos_id=1, eos_id=2, unk_id=0,
         next_state = None
         for score, tokens, beam_state, beam_emb in beams:
             context = context_of(beam_state, src_mask)
-            logps = model.head.log_probs(beam_state, beam_emb, context)
+            logits = model.head.forward(beam_state, beam_emb, context)
             if unk_suppress and unk_id is not None:
-                logps = logps.clone()
-                logps[:, unk_id] = float("-inf")
+                logits = mask_unk(logits, unk_id)
+            logps = torch.log_softmax(logits, dim=-1)
             values, indices = logps.topk(beam_size).values.squeeze(0), logps.topk(beam_size).indices.squeeze(0)
             if next_state is None:
                 next_state = model.decoder.step(beam_emb, beam_state, context)
