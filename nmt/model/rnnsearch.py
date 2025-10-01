@@ -22,14 +22,14 @@ class RNNsearch(nn.Module):
         self.head = DeepHead(config)
 
     def forward(self, src_ids, tgt_ids, src_mask=None):
-        """logits (batch, tgt_len, vocab) over the padded target."""
+        """logits (batch, tgt_len - 1, vocab). each step predicts the next token."""
         annotations = self.encoder(src_ids)
         backward_first = annotations[:, 0, -self.config.hidden:]
         state = self.decoder.initial_state(backward_first)
         self.attention.cache(annotations)
         emb = self.decoder.embedding(tgt_ids)
         logits = []
-        for t in range(tgt_ids.shape[1]):
+        for t in range(tgt_ids.shape[1] - 1):
             context, _ = self.attention(state, src_mask)
             logits.append(self.head.forward(state, emb[:, t], context))
             state = self.decoder.step(emb[:, t], state, context)

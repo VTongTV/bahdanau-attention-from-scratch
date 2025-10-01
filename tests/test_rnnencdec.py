@@ -16,7 +16,7 @@ def test_forward_shape():
     src = torch.tensor([[1, 2, 3, 0], [4, 5, 6, 7]])
     tgt = torch.tensor([[1, 8, 9, 0], [1, 8, 9, 10]])
     logits = model(src, tgt)
-    assert logits.shape == (2, 4, 30)
+    assert logits.shape == (2, 3, 30)
 
 
 def test_no_attention_module():

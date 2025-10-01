@@ -22,7 +22,7 @@ class Trainer:
         src, src_mask, tgt, tgt_mask = batch
         self.optimizer.zero_grad()
         logits = self.model(src, tgt, src_mask)
-        loss = masked_nll(logits, tgt, tgt_mask)
+        loss = masked_nll(logits, tgt[:, 1:], tgt_mask[:, 1:])
         loss.backward()
         clip_gradients(self.model, self.config.grad_clip)
         self.optimizer.step()
@@ -62,7 +62,7 @@ class Trainer:
             src, src_mask, tgt, tgt_mask = batch
             with torch.no_grad():
                 logits = self.model(src, tgt, src_mask)
-            total += masked_nll(logits, tgt, tgt_mask).item() * src.shape[0]
+            total += masked_nll(logits, tgt[:, 1:], tgt_mask[:, 1:]).item() * src.shape[0]
             seen += src.shape[0]
         self.model.train()
         return total / max(seen, 1)

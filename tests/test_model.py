@@ -22,7 +22,7 @@ def test_rnnsearch_forward_shape():
     src = torch.tensor([[1, 2, 3, 0], [4, 5, 6, 7]])
     tgt = torch.tensor([[1, 8, 9, 0], [1, 8, 9, 10]])
     logits = model(src, tgt)
-    assert logits.shape == (2, 4, 30)
+    assert logits.shape == (2, 3, 30)
 
 
 def test_rnnsearch_single_sentence():
@@ -30,7 +30,7 @@ def test_rnnsearch_single_sentence():
     src = torch.tensor([[2, 5, 9]])
     tgt = torch.tensor([[1, 8, 9]])
     logits = model(src, tgt)
-    assert logits.shape == (1, 3, 30)
+    assert logits.shape == (1, 2, 30)
 
 
 def test_rnnencdec_forward_shape():
@@ -38,7 +38,7 @@ def test_rnnencdec_forward_shape():
     src = torch.tensor([[1, 2, 3, 0], [4, 5, 6, 7]])
     tgt = torch.tensor([[1, 8, 9, 0], [1, 8, 9, 10]])
     logits = model(src, tgt)
-    assert logits.shape == (2, 4, 30)
+    assert logits.shape == (2, 3, 30)
 
 
 def test_rnnencdec_single_sentence():
@@ -46,7 +46,7 @@ def test_rnnencdec_single_sentence():
     src = torch.tensor([[2, 5, 9]])
     tgt = torch.tensor([[1, 8, 9]])
     logits = model(src, tgt)
-    assert logits.shape == (1, 3, 30)
+    assert logits.shape == (1, 2, 30)
 
 
 def test_rnnsearch_init_parameters_runs():

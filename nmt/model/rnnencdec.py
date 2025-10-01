@@ -20,7 +20,7 @@ class RNNencdec(nn.Module):
         self.head = DeepHead(config)
 
     def forward(self, src_ids, tgt_ids, src_mask=None):
-        """logits (batch, tgt_len, vocab) over the padded target."""
+        """logits (batch, tgt_len - 1, vocab). each step predicts the next token."""
         batch = src_ids.shape[0]
         annotations = self.encoder(src_ids)
         forward_last = annotations[:, -1, : self.config.hidden]
@@ -29,7 +29,7 @@ class RNNencdec(nn.Module):
         state = self.decoder.initial_state(forward_last)
         emb = self.decoder.embedding(tgt_ids)
         logits = []
-        for t in range(tgt_ids.shape[1]):
+        for t in range(tgt_ids.shape[1] - 1):
             logits.append(self.head.forward(state, emb[:, t], context))
             state = self.decoder.step(emb[:, t], state, context)
         return torch.stack(logits, dim=1)
