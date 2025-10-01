@@ -39,6 +39,17 @@ def test_special_ids_stable():
     assert not is_special("a")
 
 
+def test_specials_in_data_keep_fixed_ids():
+    v = Vocab(10)
+    v.count([[BOS, "a", "b", EOS, BOS, EOS], ["a", "b", "c"]])
+    v.build()
+    assert v.id(BOS) == 0
+    assert v.id(EOS) == 1
+    assert v.id(UNK) == 2
+    assert v.id("a") == 3
+    assert v.id("b") == 4
+
+
 def test_save_load(tmp_path: Path):
     v = make_vocab(10)
     path = tmp_path / "vocab.txt"

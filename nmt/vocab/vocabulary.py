@@ -24,7 +24,8 @@ class Vocab:
     def build(self) -> None:
         """cut the shortlist and assign ids. special tokens come first."""
         specials = [BOS, EOS, UNK]
-        self.token = specials + [t for t, _ in self.counter.most_common(self.size - len(specials))]
+        common = [t for t, _ in self.counter.most_common(self.size) if t not in specials]
+        self.token = specials + common[: self.size - len(specials)]
         self.stoi = {t: i for i, t in enumerate(self.token)}
         self.frozen = True
 
