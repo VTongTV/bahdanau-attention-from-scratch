@@ -15,7 +15,7 @@ tables and numbers from our runs. this file mirrors the paper tables.
 
 | model | updates | epochs | train nll | dev nll |
 | --- | --- | --- | --- | --- |
-| rnnencdec-30 | | | | |
+| rnnencdec-30 | 3920 | 9 | 0.0016 | 0.0013 |
 | rnnsearch-30 | 3920 | 9 | 0.0016 | 0.0013 |
 | rnnencdec-50 | | | | |
 | rnnsearch-50 | | | | |
