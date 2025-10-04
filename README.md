@@ -39,6 +39,19 @@ each model trains in two modes: pairs up to 30 words and pairs up to 50 words.
 7. analysis: alignments, monotonicity, length curves
 8. report and release
 
+## progress
+
+| phase | state |
+|-------|-------|
+| 1. scaffold, config, vocab, tokenizer | done |
+| 2. data pipeline: filters, splits, buckets | done |
+| 3. model core: gru, birnn, attention, head | done |
+| 4. training: adadelta, clip, checkpoints | done |
+| 5. decoding: greedy, beam, bleu | done |
+| 6. experiments: both models, 30/50 modes | search-30 and encdec-30 trained |
+| 7. analysis: alignments, monotonicity, curves | in progress |
+| 8. report and release | pending |
+
 ## usage
 
 ```bash
