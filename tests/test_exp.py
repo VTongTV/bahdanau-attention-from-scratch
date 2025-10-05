@@ -3,11 +3,17 @@
 from pathlib import Path
 
 import numpy as np
+import torch
 
 from nmt.config import ExperimentConfig
+from nmt.data.prepare import Store
 from nmt.eval.results import load_run_rows, render_markdown
 from nmt.exp.configs import load_matrix, rnnencdec_30, rnnsearch_30
-from nmt.exp.runner import run_matrix
+from nmt.exp.runner import dev_nll_run, run_matrix
+from nmt.model.rnnsearch import RNNsearch
+from nmt.train.checkpoint import save_checkpoint
+from nmt.train.optimizer import Adadelta
+from nmt.train.trainer import Trainer
 
 
 def test_rnnsearch_30_config_dims():
@@ -82,3 +88,36 @@ def test_load_matrix_reads_yaml(tmp_path):
     assert len(configs) == 2
     assert configs[0].model == "rnnsearch"
     assert configs[1].max_len == 50
+
+
+def test_dev_nll_run_from_checkpoint(tmp_path):
+    config = ExperimentConfig(hidden=8, embedding=4, vocab_size=20, maxout=4,
+                              alignment_hidden=6, minibatch=4, rebucket_pool=8)
+    model = RNNsearch(config)
+    model.init_parameters()
+    optimizer = Adadelta(model.parameters())
+    trainer = Trainer(model, optimizer, config)
+    rng = np.random.default_rng(2)
+    sl = rng.integers(2, 5, 8)
+    tl = rng.integers(2, 5, 8)
+    store = Store(rng.integers(1, 18, int(sl.sum())),
+                  rng.integers(1, 18, int(tl.sum())),
+                  sl.astype(np.int64), tl.astype(np.int64))
+    batch = collate_from_store(store, 0)
+    trainer.train_step(batch)
+    save_checkpoint(tmp_path / "checkpoint.best.pt", model, optimizer, config, 1)
+    (tmp_path / "dev.npz").parent.mkdir(exist_ok=True)
+    np.savez(tmp_path / "dev.npz",
+             src=torch.cat([store.src_row(i) for i in range(8)]).numpy(),
+             tgt=torch.cat([store.tgt_row(i) for i in range(8)]).numpy(),
+             src_len=sl, tgt_len=tl)
+    nll = dev_nll_run(tmp_path, tmp_path)
+    assert nll == nll
+    assert nll > 0
+
+
+def collate_from_store(store, i):
+    from nmt.data.collate import collate
+
+    rows = [i % len(store), (i + 1) % len(store)]
+    return collate([store.src_row(r) for r in rows], [store.tgt_row(r) for r in rows])

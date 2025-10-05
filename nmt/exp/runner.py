@@ -5,11 +5,13 @@ from pathlib import Path
 import torch
 
 from nmt.config import ExperimentConfig
+from nmt.data.iterate import shuffled_order
 from nmt.data.prepare import Store
 from nmt.decode.corpus import decode_all
 from nmt.eval.results import load_run_rows
 from nmt.train.checkpoint import load_checkpoint
 from nmt.train.train import build_model, run
+from nmt.train.trainer import Trainer
 from nmt.utils.device import pick_device
 
 
@@ -38,3 +40,18 @@ def decode_run(run_dir, data_dir):
 def collect_run(run_dir, data_dir, vocab_path):
     """all report numbers for one completed run."""
     return load_run_rows(run_dir, data_dir, vocab_path)
+
+
+def dev_nll_run(run_dir, data_dir):
+    """dev nll of the best checkpoint, for variance checks."""
+    run_dir = Path(run_dir)
+    checkpoint = run_dir / "checkpoint.best.pt"
+    raw = torch.load(checkpoint, weights_only=False)
+    config = ExperimentConfig.from_dict(raw["config"])
+    model = build_model(config)
+    load_checkpoint(checkpoint, model, None, config)
+    model.to(pick_device(config.device))
+    trainer = Trainer(model, None, config)
+    dev_store = Store.load(Path(data_dir) / "dev.npz")
+    order = shuffled_order(len(dev_store), config.seed)
+    return trainer.validate(dev_store, order)
