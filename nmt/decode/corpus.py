@@ -3,10 +3,11 @@
 from pathlib import Path
 
 from nmt.decode.beam import beam_search
+from nmt.decode.unk import drop_unk
 from nmt.vocab.special import special_ids
 
 
-def decode_all(model, store, config, out_path, text_vocab=None):
+def decode_all(model, store, config, out_path, text_vocab=None, drop_unk_flag=False):
     """translate every row of a store and write one sentence per line."""
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -25,5 +26,7 @@ def decode_all(model, store, config, out_path, text_vocab=None):
                 unk_suppress=config.unk_suppress,
                 max_len=config.max_len,
             )[0]
+            if drop_unk_flag:
+                tokens = drop_unk(tokens, special["unk"])
             fh.write(" ".join(str(t) for t in tokens) + "\n")
         fh.flush()

@@ -8,3 +8,8 @@ def mask_unk(logits, unk_id):
     masked = logits.clone()
     masked[:, unk_id] = float("-inf")
     return masked
+
+
+def drop_unk(tokens, unk_id):
+    """remove unk tokens from a finished output sequence."""
+    return [t for t in tokens if t != unk_id]
