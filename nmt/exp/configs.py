@@ -1,5 +1,9 @@
 """run matrix configs for the paper comparison."""
 
+from pathlib import Path
+
+import yaml
+
 from nmt.config import ExperimentConfig
 
 # small-scale cpu dims. the ratios follow the paper architecture.
@@ -34,3 +38,9 @@ def rnnencdec_30():
         maxout=MAXOUT,
         vocab_size=VOCAB,
     )
+
+
+def load_matrix(path):
+    """read the run matrix from a yaml file into configs."""
+    raw = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    return [ExperimentConfig(**entry) for entry in raw["runs"]]

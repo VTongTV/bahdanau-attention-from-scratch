@@ -6,7 +6,7 @@ import numpy as np
 
 from nmt.config import ExperimentConfig
 from nmt.eval.results import load_run_rows, render_markdown
-from nmt.exp.configs import rnnencdec_30, rnnsearch_30
+from nmt.exp.configs import load_matrix, rnnencdec_30, rnnsearch_30
 from nmt.exp.runner import run_matrix
 
 
@@ -65,3 +65,20 @@ def test_render_markdown_rows_and_empty():
     text = render_markdown(rows)
     assert "| rnnencdec-30 | 13.93 | 24.19 |" in text
     assert "| rnnencdec-50 | | |" in text
+
+
+def test_load_matrix_reads_yaml(tmp_path):
+    yaml_path = tmp_path / "experiments.yaml"
+    yaml_path.write_text(
+        "runs:\n"
+        "  - model: rnnsearch\n"
+        "    max_len: 30\n"
+        "    hidden: 128\n"
+        "  - model: rnnencdec\n"
+        "    max_len: 50\n"
+        "    hidden: 128\n",
+        encoding="utf-8")
+    configs = load_matrix(yaml_path)
+    assert len(configs) == 2
+    assert configs[0].model == "rnnsearch"
+    assert configs[1].max_len == 50

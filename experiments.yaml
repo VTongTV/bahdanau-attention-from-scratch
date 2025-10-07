@@ -1,0 +1,49 @@
+# the frozen run matrix
+
+# small-scale cpu dims. ratios follow the paper architecture.
+# datasets: data30 for 30-word runs, data50 for 50-word runs.
+
+runs:
+  - model: rnnsearch
+    max_len: 30
+    hidden: 128
+    embedding: 64
+    alignment_hidden: 128
+    maxout: 64
+    vocab_size: 3000
+    epochs: 10
+    patience: 3
+    seed: 1
+
+  - model: rnnencdec
+    max_len: 30
+    hidden: 128
+    embedding: 64
+    alignment_hidden: 128
+    maxout: 64
+    vocab_size: 3000
+    epochs: 10
+    patience: 3
+    seed: 1
+
+  - model: rnnsearch
+    max_len: 50
+    hidden: 128
+    embedding: 64
+    alignment_hidden: 128
+    maxout: 64
+    vocab_size: 3000
+    epochs: 10
+    patience: 3
+    seed: 1
+
+  - model: rnnencdec
+    max_len: 50
+    hidden: 128
+    embedding: 64
+    alignment_hidden: 128
+    maxout: 64
+    vocab_size: 3000
+    epochs: 10
+    patience: 3
+    seed: 1
