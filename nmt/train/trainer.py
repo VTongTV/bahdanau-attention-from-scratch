@@ -33,10 +33,19 @@ class Trainer:
         logits = self.model(src, tgt, src_mask)
         loss = masked_nll(logits, tgt[:, 1:], tgt_mask[:, 1:])
         loss.backward()
+        self.last_gnorm = self._grad_norm()
         clip_gradients(self.model, self.config.grad_clip)
         self.optimizer.step()
         self.updates += 1
         return loss.item()
+
+    def _grad_norm(self):
+        """l2 norm summed over all parameter gradients."""
+        sq = 0.0
+        for param in self.model.parameters():
+            if param.grad is not None:
+                sq += float(param.grad.norm() ** 2)
+        return sq ** 0.5
 
     def run_epoch(self, store, epoch, log_every: int):
         """one sequential pass over the shuffled sentences."""
@@ -53,6 +62,7 @@ class Trainer:
             if self.updates % log_every == 0:
                 rms_g, rms_dx, scale = self.optimizer.statistics()
                 print(f"step {self.updates} loss {loss:.4f} "
+                      f"gnorm {self.last_gnorm:.4f} "
                       f"rms_g {rms_g:.5f} rms_dx {rms_dx:.5f} scale {scale:.4f}",
                       flush=True)
         return sum(losses) / len(losses)
