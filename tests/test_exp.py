@@ -54,6 +54,7 @@ def test_collect_run_reads_artifacts(tmp_path):
              src_len=np.array([4], dtype=np.int64),
              tgt_len=np.array([5], dtype=np.int64))
     (tmp_path / "test.npz.out").write_text("1 5 6 7 8\n", encoding="utf-8")
+    (tmp_path / "test.npz.nounk.out").write_text("1 5 6 7\n", encoding="utf-8")
     (tmp_path / "train.csv").write_text(
         "epoch,update,train_nll,val_nll\n9,3920,3.85,3.95\n", encoding="utf-8")
     (tmp_path / "vocab.tgt").write_text("<s>\n</s>\n<unk>\n", encoding="utf-8")
@@ -61,7 +62,7 @@ def test_collect_run_reads_artifacts(tmp_path):
     assert row is not None
     assert row["epochs"] == 9
     assert row["bleu"] == 1.0
-    assert row["no_unk_bleu"] == 1.0
+    assert row["no_unk_bleu"] < 1.0
     assert row["updates"] == 3920
 
 

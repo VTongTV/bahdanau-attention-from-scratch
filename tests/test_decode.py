@@ -83,3 +83,13 @@ def test_decode_all_writes_one_line_per_sentence(tmp_path):
     assert len(lines) == 6
     assert all(line.split() for line in lines)
     assert lines[0].split()[0] == str(bos)
+
+
+def test_decode_all_rows_subset(tmp_path):
+    store = make_store(6)
+    v = make_vocab()
+    out = Path(tmp_path) / "out.txt"
+    decode_all(make_search(), store, make_search().config, out, v, rows=[0, 3])
+    lines = out.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 2
+    assert all(line.split() for line in lines)

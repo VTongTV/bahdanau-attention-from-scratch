@@ -2,7 +2,9 @@
 
 from pathlib import Path
 
-from nmt.eval.scorer import parse_ids, score_output
+from nmt.eval.corpus_bleu import corpus_bleu
+from nmt.eval.scorer import parse_ids
+from nmt.eval.subsets import no_unk_indices
 from nmt.vocab.special import special_ids
 from nmt.vocab.vocabulary import Vocab
 
@@ -19,15 +21,22 @@ def load_run_rows(run_dir, data_dir, vocab_path):
     srcs, refs = read_store(data_dir, len(preds))
     csv_path = run_dir / "train.csv"
     train_nll, dev_nll, updates, epochs = read_nll(csv_path)
-    scored = score_output(srcs, preds, refs, unk)
+    kept = no_unk_indices(srcs, refs, unk)
+    nounk_path = run_dir / "test.npz.nounk.out"
+    if nounk_path.exists():
+        preds_nounk = [parse_ids(line) for line in
+                       nounk_path.read_text(encoding="utf-8").splitlines()]
+        no_unk_bleu = corpus_bleu(preds_nounk, [refs[i] for i in kept])
+    else:
+        no_unk_bleu = corpus_bleu([preds[i] for i in kept], [refs[i] for i in kept])
     return {
         "train_nll": train_nll,
         "dev_nll": dev_nll,
         "updates": updates,
         "epochs": epochs,
-        "bleu": scored["bleu"],
-        "no_unk_bleu": scored["no_unk_bleu"],
-        "no_unk_pairs": scored["no_unk_pairs"],
+        "bleu": corpus_bleu(preds, refs),
+        "no_unk_bleu": no_unk_bleu,
+        "no_unk_pairs": len(kept),
     }
 
 

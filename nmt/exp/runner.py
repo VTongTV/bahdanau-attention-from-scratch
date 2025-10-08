@@ -9,6 +9,7 @@ from nmt.data.iterate import shuffled_order
 from nmt.data.prepare import Store
 from nmt.decode.corpus import decode_all
 from nmt.eval.results import load_run_rows
+from nmt.eval.subsets import no_unk_indices
 from nmt.train.checkpoint import load_checkpoint
 from nmt.train.train import build_model, run
 from nmt.train.trainer import Trainer
@@ -23,8 +24,9 @@ def run_matrix(configs, out_root):
         run(config)
 
 
-def decode_run(run_dir, data_dir):
-    """translate the whole test set with the best checkpoint."""
+def decode_run(run_dir, data_dir, out_name="test.npz.out", unk_suppress=False,
+               rows=None):
+    """translate the test set with the best checkpoint."""
     run_dir = Path(run_dir)
     checkpoint = run_dir / "checkpoint.best.pt"
     raw = torch.load(checkpoint, weights_only=False)
@@ -33,8 +35,23 @@ def decode_run(run_dir, data_dir):
     load_checkpoint(checkpoint, model, None, config)
     model.to(pick_device(config.device))
     model.eval()
+    config.unk_suppress = unk_suppress
     store = Store.load(Path(data_dir) / "test.npz")
-    decode_all(model, store, config, run_dir / "test.npz.out")
+    decode_all(model, store, config, run_dir / out_name, rows=rows)
+
+
+def decode_no_unk(run_dir, data_dir):
+    """decode only the no-unk rows with suppression on."""
+    run_dir = Path(run_dir)
+    all_path = run_dir / "test.npz.out"
+    if not all_path.exists():
+        return
+    store = Store.load(Path(data_dir) / "test.npz")
+    srcs = [store.src_row(i).tolist() for i in range(len(store))]
+    refs = [store.tgt_row(i).tolist() for i in range(len(store))]
+    kept = no_unk_indices(srcs, refs, 2)
+    decode_run(run_dir, data_dir, out_name="test.npz.nounk.out",
+               unk_suppress=True, rows=kept)
 
 
 def collect_run(run_dir, data_dir, vocab_path):
