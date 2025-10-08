@@ -20,6 +20,11 @@ def zero(tensor) -> None:
     torch.nn.init.zeros_(tensor)
 
 
+def constant(tensor, value) -> None:
+    """fill a parameter with one scalar value."""
+    torch.nn.init.constant_(tensor, value)
+
+
 def default(param) -> None:
     """the paper default: gaussian 0.01 weights, zero vectors."""
     if param.dim() > 1:

@@ -53,7 +53,7 @@ def test_rnnsearch_init_parameters_runs():
     model = make_rnnsearch()
     model.init_parameters()
     assert model.decoder.cell.b.abs().max() == 0
-    assert model.attention.alignment.v_a.abs().max() == 0
+    assert model.attention.alignment.v_a.abs().max() == 0.05
     assert model.head.maxout.b.abs().max() == 0
 
 

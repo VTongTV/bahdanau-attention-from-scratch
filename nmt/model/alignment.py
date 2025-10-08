@@ -3,8 +3,8 @@
 import torch
 import torch.nn as nn
 
-from nmt.config import ALIGNMENT_INIT_STD, ExperimentConfig
-from nmt.model.params import gaussian, zero
+from nmt.config import ALIGNMENT_INIT_STD, ALIGNMENT_VA_INIT, ExperimentConfig
+from nmt.model.params import constant, gaussian
 
 
 class Alignment(nn.Module):
@@ -28,7 +28,8 @@ class Alignment(nn.Module):
         return torch.einsum("btk,k->bt", torch.tanh(energy), self.v_a)
 
     def apply_initialization(self):
-        """paper init: gaussian 0.001 for w_a and u_a, zero for v_a."""
+        """paper init: gaussian 0.001 for w_a and u_a.
+        v_a starts at 0.05, not zero. see config and methodology."""
         gaussian(self.w_a.weight, ALIGNMENT_INIT_STD)
         gaussian(self.u_a.weight, ALIGNMENT_INIT_STD)
-        zero(self.v_a)
+        constant(self.v_a, ALIGNMENT_VA_INIT)

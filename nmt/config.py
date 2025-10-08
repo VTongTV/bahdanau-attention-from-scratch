@@ -32,6 +32,9 @@ TEST_MODE_EVAL = 128
 # initialization (appendix b.1)
 ALIGNMENT_INIT_STD = 0.001
 WEIGHT_INIT_STD = 0.01
+# deviation from b.1: v_a starts at 0.05 instead of zero so the
+# alignment gets a gradient at small scale. documented in methodology.
+ALIGNMENT_VA_INIT = 0.05
 
 # special tokens
 BOS = "<s>"

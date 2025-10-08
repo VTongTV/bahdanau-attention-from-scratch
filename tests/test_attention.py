@@ -77,6 +77,6 @@ def test_context_is_weighted_sum():
 def test_alignment_init_spread():
     att = make_attention()
     att.apply_initialization()
-    assert att.alignment.v_a.abs().max() == 0
+    assert att.alignment.v_a.abs().max() == 0.05
     assert att.alignment.w_a.weight.std().item() < 0.01
     assert att.alignment.u_a.weight.std().item() < 0.01
