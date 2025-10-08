@@ -5,9 +5,8 @@ import torch
 from nmt.model.rnnsearch import RNNsearch
 
 
-def prepare_batch(model, src_ids, src_mask=None):
-    """encode the source and return the decoder start state."""
-    annotations = model.encoder(src_ids)
+def prepare_from_annotations(model, annotations):
+    """decoder start state and context closure from ready annotations."""
     if isinstance(model, RNNsearch):
         model.attention.cache(annotations)
         backward_first = annotations[:, 0, -model.config.hidden:]
@@ -15,6 +14,12 @@ def prepare_batch(model, src_ids, src_mask=None):
         backward_first = annotations[:, -1, :model.config.hidden]
     state = model.decoder.initial_state(backward_first)
     return state, context_of(model, annotations)
+
+
+def prepare_batch(model, src_ids, src_mask=None):
+    """encode the source and return the decoder start state."""
+    annotations = model.encoder(src_ids)
+    return prepare_from_annotations(model, annotations)
 
 
 def context_of(model, annotations):
