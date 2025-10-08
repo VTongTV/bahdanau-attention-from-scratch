@@ -18,6 +18,34 @@ from nmt.vocab.tokenizer import tokenize
 from nmt.vocab.vocabulary import Vocab
 
 
+def train(argv=None):
+    """train entry point, same flags as nmt/train/train.py."""
+    from nmt.args import config_from_args
+    from nmt.train.train import run
+
+    run(config_from_args(argv))
+
+
+def evaluate(argv=None):
+    """corpus bleu of a hypotheses file against a references file."""
+    from nmt.eval.corpus_bleu import corpus_bleu
+    from nmt.eval.scorer import parse_ids
+
+    p = argparse.ArgumentParser(description="score hypotheses with corpus bleu")
+    p.add_argument("--hypotheses", required=True)
+    p.add_argument("--references", required=True)
+    args = p.parse_args(argv)
+    hypotheses = [parse_ids(line) for line in open(args.hypotheses, encoding="utf-8")]
+    references = [parse_ids(line) for line in open(args.references, encoding="utf-8")]
+    return print_bleu(corpus_bleu(hypotheses, references))
+
+
+def print_bleu(score):
+    """print a bleu score and return it for tests."""
+    print(f"bleu {score:.2f}")
+    return score
+
+
 def build_parser() -> argparse.ArgumentParser:
     """return the translate cli parser."""
     p = argparse.ArgumentParser(description="translate a source text file")
@@ -77,3 +105,6 @@ def main(argv=None) -> None:
 
 if __name__ == "__main__":
     main()
+
+
+translate = main
