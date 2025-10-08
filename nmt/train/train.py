@@ -23,10 +23,11 @@ from nmt.utils.device import pick_device
 class CsvLog:
     """append-only csv writer for run metrics."""
 
-    def __init__(self, path):
-        self.file = open(path, "w", newline="")
+    def __init__(self, path, append=False):
+        self.file = open(path, "a" if append else "w", newline="")
         self.writer = csv.writer(self.file)
-        self.writer.writerow(["epoch", "update", "train_nll", "val_nll"])
+        if self.file.tell() == 0:
+            self.writer.writerow(["epoch", "update", "train_nll", "val_nll"])
 
     def row(self, epoch, update, train_nll, val_nll):
         self.writer.writerow([epoch, update, f"{train_nll:.4f}", f"{val_nll:.4f}"])
@@ -66,7 +67,8 @@ def run(config: ExperimentConfig) -> None:
     start_update = 0
     if config.resume:
         start_update, _ = load_checkpoint(config.resume, model, optimizer, config)
-    log = CsvLog(run_dir / "train.csv")
+        trainer.updates = start_update
+    log = CsvLog(run_dir / "train.csv", append=bool(config.resume))
     stopper = EarlyStopper(config.patience)
     snapshot = BestSnapshot(
         run_dir / "checkpoint.best.pt",

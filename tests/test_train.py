@@ -63,6 +63,26 @@ def test_best_snapshot_saves_only_on_improvement(tmp_path):
     assert snapshot.best_update == 30
 
 
+def test_resume_continues_the_update_counter(tmp_path):
+    warnings.filterwarnings("ignore")
+    torch.manual_seed(5)
+    config = ExperimentConfig(
+        hidden=10, embedding=5, vocab_size=30, maxout=6,
+        alignment_hidden=8, minibatch=4, rebucket_pool=12, seed=5,
+    )
+    model = RNNencdec(config)
+    model.init_parameters()
+    optimizer = Adadelta(model.parameters())
+    path = Path(tmp_path) / "ckpt.pt"
+    save_checkpoint(path, model, optimizer, config, 7)
+    resumed = RNNencdec(config)
+    resumed.init_parameters()
+    trainer = Trainer(resumed, Adadelta(resumed.parameters()), config)
+    start, _ = load_checkpoint(path, resumed, trainer.optimizer, config)
+    trainer.updates = start
+    assert trainer.updates == 7
+
+
 def test_resume_config_fidelity(tmp_path):
     warnings.filterwarnings("ignore")
     torch.manual_seed(5)
