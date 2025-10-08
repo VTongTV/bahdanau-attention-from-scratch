@@ -39,5 +39,6 @@ class Decoder(nn.Module):
 
     def init_parameters(self) -> None:
         """paper init: gaussian for w_s, cell init for the gru."""
+        self.embedding.init_parameters()
         self.cell.init_parameters()
         gaussian(self.w_s.weight, WEIGHT_INIT_STD)
