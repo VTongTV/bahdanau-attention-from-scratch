@@ -8,6 +8,7 @@ from nmt.model.rnnsearch import RNNsearch
 
 
 def make_model():
+    torch.manual_seed(5)
     model = RNNsearch(ExperimentConfig(
         hidden=10, embedding=5, vocab_size=30, maxout=6, alignment_hidden=8))
     model.init_parameters()
