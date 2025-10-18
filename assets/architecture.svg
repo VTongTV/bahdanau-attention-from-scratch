@@ -1,0 +1,210 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 740" role="img" aria-labelledby="arch-t arch-d">
+<title id="arch-t">rnnsearch architecture</title>
+<desc id="arch-d">a live one-step tour of rnnsearch. source words fall into the shared embedding. a forward scanner and a backward scanner sweep the words and build annotations. a moving spotlight marks which annotation the decoder attends to. softmax forces the attention weights to sum to 1. the weighted sum is the context. the decoder gru mixes the context into its state, the maxout head scores 30000 words, and one word is emitted.</desc>
+
+<defs>
+  <radialGradient id="arch-bg" cx="42%" cy="28%" r="95%">
+    <stop offset="0%" stop-color="#171922"/><stop offset="100%" stop-color="#08090C"/>
+  </radialGradient>
+  <pattern id="arch-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+    <circle cx="1" cy="1" r="1" fill="#1E2230"/>
+  </pattern>
+  <linearGradient id="arch-hbar" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#04E762"/><stop offset="100%" stop-color="#0A6B3F"/></linearGradient>
+  <linearGradient id="arch-steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3C424D"/><stop offset="100%" stop-color="#191C23"/></linearGradient>
+  <radialGradient id="arch-spot" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#04E762" stop-opacity="0.85"/><stop offset="100%" stop-color="#04E762" stop-opacity="0"/></radialGradient>
+  <filter id="arch-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="arch-glow2" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <marker id="arch-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7C8998"/></marker>
+  <marker id="arch-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#04E762"/></marker>
+</defs>
+
+<rect width="1180" height="740" fill="url(#arch-bg)"/>
+<rect width="1180" height="740" fill="url(#arch-grid)"/>
+<text x="44" y="38" fill="#E8E6E3" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="bold">rnnsearch - anatomy of one decoder step</text>
+<text x="44" y="60" fill="#6E747D" font-family="Arial, Helvetica, sans-serif" font-size="12">bi-gru encoder builds a 2n annotation per source word. each target step reads its own context c_i.</text>
+
+<g font-family="Arial, Helvetica, sans-serif">
+  <text x="60" y="92" fill="#7C8998" font-size="11">source words  x</text>
+  <g stroke="#5A6270" stroke-width="1.3" fill="#1A1D23">
+    <rect x="60" y="100" width="62" height="38" rx="5"/>
+    <rect x="128" y="100" width="62" height="38" rx="5"/>
+    <rect x="196" y="100" width="62" height="38" rx="5"/>
+    <rect x="264" y="100" width="62" height="38" rx="5"/>
+    <rect x="332" y="100" width="62" height="38" rx="5"/>
+    <rect x="400" y="100" width="62" height="38" rx="5"/>
+  </g>
+  <g fill="#E8E6E3" font-size="14" text-anchor="middle">
+    <text x="91" y="124">the</text><text x="159" y="124">man</text><text x="227" y="124">loves</text>
+    <text x="295" y="124">the</text><text x="363" y="124">dog</text><text x="431" y="124">＜/s＞</text>
+  </g>
+
+  <text x="60" y="158" fill="#7C8998" font-size="11">shared source embedding  E_src  -  m = 620  -  used by both encoder directions</text>
+  <rect x="60" y="170" width="402" height="46" rx="6" fill="url(#arch-steel)" stroke="#5A6270"/>
+  <text x="261" y="198" fill="#E8E6E3" font-size="13" text-anchor="middle">E_src lookup  -  shared by forward and backward rnns</text>
+
+  <text x="60" y="232" fill="#7C8998" font-size="12">forward gru - n = 1000 - sweeps left to right</text>
+  <text x="510" y="232" fill="#04E762" font-size="11">h_fwd_j</text>
+  <g stroke="#5A6270" stroke-width="1.3" fill="#161920">
+    <rect x="60" y="260" width="62" height="34" rx="4"/>
+    <rect x="128" y="260" width="62" height="34" rx="4"/>
+    <rect x="196" y="260" width="62" height="34" rx="4"/>
+    <rect x="264" y="260" width="62" height="34" rx="4"/>
+    <rect x="332" y="260" width="62" height="34" rx="4"/>
+    <rect x="400" y="260" width="62" height="34" rx="4"/>
+  </g>
+  <g fill="#04E762" font-size="10" text-anchor="middle">
+    <text x="91" y="281">h_fwd_1</text><text x="159" y="281">h_fwd_2</text><text x="227" y="281">h_fwd_3</text>
+    <text x="295" y="281">h_fwd_4</text><text x="363" y="281">h_fwd_5</text><text x="431" y="281">h_fwd_6</text>
+  </g>
+  <rect x="60" y="258" width="62" height="38" rx="6" fill="#04E762" opacity="0">
+    <animate attributeName="opacity" values="0;0.18;0.18;0" keyTimes="0;0.05;0.95;1" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="width" values="62;402" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <text x="500" y="281" fill="#0E8F52" font-size="9">read out</text>
+
+  <text x="60" y="320" fill="#7C8998" font-size="12">backward gru - n = 1000 - sweeps right to left</text>
+  <text x="510" y="320" fill="#04E762" font-size="11">h_bwd_j</text>
+  <g stroke="#5A6270" stroke-width="1.3" fill="#161920">
+    <rect x="60" y="348" width="62" height="34" rx="4"/>
+    <rect x="128" y="348" width="62" height="34" rx="4"/>
+    <rect x="196" y="348" width="62" height="34" rx="4"/>
+    <rect x="264" y="348" width="62" height="34" rx="4"/>
+    <rect x="332" y="348" width="62" height="34" rx="4"/>
+    <rect x="400" y="348" width="62" height="34" rx="4"/>
+  </g>
+  <g fill="#04E762" font-size="10" text-anchor="middle">
+    <text x="91" y="369">h_bwd_1</text><text x="159" y="369">h_bwd_2</text><text x="227" y="369">h_bwd_3</text>
+    <text x="295" y="369">h_bwd_4</text><text x="363" y="369">h_bwd_5</text><text x="431" y="369">h_bwd_6</text>
+  </g>
+  <rect x="400" y="346" width="62" height="38" rx="6" fill="#04E762" opacity="0">
+    <animate attributeName="opacity" values="0;0.18;0.18;0" keyTimes="0;0.05;0.95;1" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="x" values="400;60" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+  </rect>
+
+  <text x="600" y="92" fill="#7C8998" font-size="11">annotations  h_j = [h_fwd_j ; h_bwd_j]  -  2n = 2000  -  one per source word</text>
+  <text x="608" y="106" fill="#7C8998" font-size="10">forward half (n)</text>
+  <text x="656" y="106" fill="#7C8998" font-size="10">backward half (n)</text>
+
+  <g>
+    <rect x="608" y="110" width="18" height="316" rx="3" fill="url(#arch-hbar)"/>
+    <rect x="630" y="110" width="18" height="316" rx="3" fill="url(#arch-steel)" stroke="#2A2E35"/>
+    <rect x="668" y="110" width="18" height="316" rx="3" fill="url(#arch-hbar)"/>
+    <rect x="690" y="110" width="18" height="316" rx="3" fill="url(#arch-steel)" stroke="#2A2E35"/>
+    <rect x="728" y="110" width="18" height="316" rx="3" fill="url(#arch-hbar)"/>
+    <rect x="750" y="110" width="18" height="316" rx="3" fill="url(#arch-steel)" stroke="#2A2E35"/>
+    <rect x="788" y="110" width="18" height="316" rx="3" fill="url(#arch-hbar)"/>
+    <rect x="810" y="110" width="18" height="316" rx="3" fill="url(#arch-steel)" stroke="#2A2E35"/>
+    <rect x="848" y="110" width="18" height="316" rx="3" fill="url(#arch-hbar)"/>
+    <rect x="870" y="110" width="18" height="316" rx="3" fill="url(#arch-steel)" stroke="#2A2E35"/>
+    <rect x="908" y="110" width="18" height="316" rx="3" fill="url(#arch-hbar)"/>
+    <rect x="930" y="110" width="18" height="316" rx="3" fill="url(#arch-steel)" stroke="#2A2E35"/>
+  </g>
+  <g fill="#6E747D" font-size="10" text-anchor="middle">
+    <text x="617" y="442">h_1</text><text x="677" y="442">h_2</text><text x="737" y="442">h_3</text>
+    <text x="797" y="442">h_4</text><text x="857" y="442">h_5</text><text x="917" y="442">h_6</text>
+  </g>
+
+  <circle cx="639" cy="150" r="58" fill="url(#arch-spot)" opacity="0">
+    <animate attributeName="opacity" values="0;0.95;0.95;0.95;0" keyTimes="0;0.12;0.4;0.9;1" dur="3s" begin="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="cx" values="639;699;759;819;879;939;639" keyTimes="0;0.16;0.32;0.48;0.64;0.82;1" dur="3s" begin="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="150;180;210;240;190;160;150" keyTimes="0;0.16;0.32;0.48;0.64;0.82;1" dur="3s" begin="1.8s" repeatCount="indefinite"/>
+  </circle>
+
+  <text x="600" y="466" fill="#7C8998" font-size="11">alignment scores  e_ij = v_a^T tanh( W_a s_{i-1} + U_a h_j )</text>
+  <g stroke="#3A4049" stroke-width="1" fill="url(#arch-steel)">
+    <rect x="608" y="478" width="50" height="22" rx="2"/>
+    <rect x="668" y="478" width="50" height="22" rx="2"/>
+    <rect x="728" y="478" width="50" height="22" rx="2"/>
+    <rect x="788" y="478" width="50" height="22" rx="2"/>
+    <rect x="848" y="478" width="50" height="22" rx="2"/>
+    <rect x="908" y="478" width="50" height="22" rx="2"/>
+  </g>
+  <rect x="608" y="478" width="50" height="22" rx="2" fill="#04E762" opacity="0.55">
+    <animate attributeName="opacity" values="0.9;0.2;0.9" dur="1.6s" repeatCount="indefinite"/>
+    <animate attributeName="x" values="608;668;728;788;848;908;788;608" keyTimes="0;0.14;0.28;0.42;0.56;0.7;0.85;1" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <g fill="#6E747D" font-size="9" text-anchor="middle">
+    <text x="633" y="516">e_1</text><text x="693" y="516">e_2</text><text x="753" y="516">e_3</text>
+    <text x="813" y="516">e_4</text><text x="873" y="516">e_5</text><text x="933" y="516">e_6</text>
+  </g>
+
+  <text x="600" y="540" fill="#7C8998" font-size="11">softmax -> alpha_ij  (weights sum to 1)</text>
+  <g stroke="#0A6B3F" stroke-width="0.8" fill="url(#arch-hbar)">
+    <rect x="608" y="548" width="48" height="0"><animate attributeName="height" values="2;8;18;4;22;6;2" keyTimes="0;0.16;0.30;0.44;0.58;0.72;1" dur="3s" repeatCount="indefinite"/></rect>
+    <rect x="666" y="548" width="48" height="0"><animate attributeName="height" values="4;12;6;20;8;18;4" keyTimes="0;0.16;0.30;0.44;0.58;0.72;1" dur="3s" repeatCount="indefinite"/></rect>
+    <rect x="724" y="548" width="48" height="0"><animate attributeName="height" values="6;18;5;24;10;8;1" keyTimes="0;0.16;0.30;0.44;0.58;0.72;1" dur="3s" repeatCount="indefinite"/></rect>
+    <rect x="782" y="548" width="48" height="0"><animate attributeName="height" values="22;8;3;8;26;2;6" keyTimes="0;0.16;0.30;0.44;0.58;0.72;1" dur="3s" repeatCount="indefinite"/></rect>
+    <rect x="840" y="548" width="48" height="0"><animate attributeName="height" values="3;20;10;4;2;26;0" keyTimes="0;0.16;0.30;0.44;0.58;0.72;1" dur="3s" repeatCount="indefinite"/></rect>
+    <rect x="898" y="548" width="48" height="0"><animate attributeName="height" values="1;6;22;3;12;16;0" keyTimes="0;0.16;0.30;0.44;0.58;0.72;1" dur="3s" repeatCount="indefinite"/></rect>
+  </g>
+  <line x1="606" y1="580" x2="952" y2="580" stroke="#3A4049" stroke-width="0.8"/>
+  <text x="606" y="594" fill="#6E747D" font-size="9">sum of alpha = 1 at every step - taller bar = more attention</text>
+
+  <text x="1000" y="100" fill="#7C8998" font-size="11">decoder gru</text>
+  <rect x="980" y="112" width="180" height="74" rx="8" fill="#1A1D23" stroke="#04E762" stroke-width="1.4" filter="url(#arch-glow)"/>
+  <text x="1070" y="142" fill="#E8E6E3" font-size="14" text-anchor="middle">s_i</text>
+  <text x="1070" y="162" fill="#6E747D" font-size="11" text-anchor="middle">n = 1000 - mixes c_i</text>
+
+  <text x="1000" y="208" fill="#7C8998" font-size="11">context  c_i = sum_j alpha_ij h_j</text>
+  <rect x="980" y="218" width="180" height="48" rx="6" fill="#0E8F52" stroke="#04E762" stroke-width="1.2"/>
+  <text x="1070" y="241" fill="#E8E6E3" font-size="13" text-anchor="middle">c_i - 2n = 2000</text>
+  <text x="1070" y="258" fill="#CFE7DD" font-size="10" text-anchor="middle">weighted sum of annotations</text>
+  <line x1="980" y1="244" x2="956" y2="244" stroke="#04E762" stroke-width="2" marker-end="url(#arch-ag)"/>
+
+  <text x="1000" y="300" fill="#7C8998" font-size="11">target embedding  e(y_{i-1})</text>
+  <rect x="980" y="308" width="180" height="38" rx="5" fill="url(#arch-steel)" stroke="#5A6270"/>
+  <text x="1070" y="333" fill="#E8E6E3" font-size="12" text-anchor="middle">e(y_{i-1}) - m = 620</text>
+  <line x1="1070" y1="308" x2="1070" y2="188" stroke="#5A6270" stroke-width="1.3" marker-end="url(#arch-ar)"/>
+
+  <text x="1000" y="372" fill="#7C8998" font-size="11">maxout deep output</text>
+  <rect x="980" y="380" width="180" height="70" rx="7" fill="#1A1D23" stroke="#E8E6E3" stroke-width="1.2"/>
+  <text x="1070" y="406" fill="#E8E6E3" font-size="13" text-anchor="middle">maxout head</text>
+  <text x="1070" y="426" fill="#6E747D" font-size="11" text-anchor="middle">2l = 1000 -> l = 500</text>
+  <text x="1070" y="442" fill="#6E747D" font-size="10" text-anchor="middle">max-pool adjacent pairs</text>
+  <line x1="1070" y1="368" x2="1070" y2="378" stroke="#5A6270" stroke-width="1.3" marker-end="url(#arch-ar)"/>
+  <line x1="1070" y1="450" x2="1070" y2="484" stroke="#5A6270" stroke-width="1.3" marker-end="url(#arch-ar)"/>
+
+  <text x="1000" y="476" fill="#7C8998" font-size="11">W_o - softmax over 30 000 shortlist</text>
+  <rect x="980" y="486" width="180" height="40" rx="5" fill="url(#arch-steel)" stroke="#5A6270"/>
+  <g fill="#04E762">
+    <rect x="990" y="496" width="6" height="20"><animate attributeName="height" values="20;6;16;4;20" dur="1.6s" repeatCount="indefinite"/><animate attributeName="y" values="496;510;500;512;496" dur="1.6s" repeatCount="indefinite"/></rect>
+    <rect x="1004" y="498" width="6" height="18"><animate attributeName="height" values="12;18;6;14;12" dur="1.6s" begin="0.08s" repeatCount="indefinite"/><animate attributeName="y" values="504;498;510;502;504" dur="1.6s" begin="0.08s" repeatCount="indefinite"/></rect>
+    <rect x="1018" y="500" width="6" height="16"><animate attributeName="height" values="6;10;20;2;6" dur="1.6s" begin="0.16s" repeatCount="indefinite"/><animate attributeName="y" values="510;506;496;514;510" dur="1.6s" begin="0.16s" repeatCount="indefinite"/></rect>
+    <rect x="1032" y="494" width="6" height="22" filter="url(#arch-glow)"><animate attributeName="height" values="22;28;22;28;22" dur="1.6s" repeatCount="indefinite"/><animate attributeName="y" values="494;488;494;488;494" dur="1.6s" repeatCount="indefinite"/></rect>
+    <rect x="1046" y="502" width="6" height="14"><animate attributeName="height" values="4;8;10;6;4" dur="1.6s" begin="0.24s" repeatCount="indefinite"/><animate attributeName="y" values="512;508;506;510;512" dur="1.6s" begin="0.24s" repeatCount="indefinite"/></rect>
+    <rect x="1060" y="504" width="6" height="12"><animate attributeName="height" values="2;6;8;4;2" dur="1.6s" begin="0.32s" repeatCount="indefinite"/><animate attributeName="y" values="514;510;508;512;514" dur="1.6s" begin="0.32s" repeatCount="indefinite"/></rect>
+    <rect x="1074" y="500" width="6" height="16"><animate attributeName="height" values="8;12;4;10;8" dur="1.6s" begin="0.4s" repeatCount="indefinite"/><animate attributeName="y" values="508;504;512;506;508" dur="1.6s" begin="0.4s" repeatCount="indefinite"/></rect>
+    <rect x="1088" y="502" width="6" height="14"><animate attributeName="height" values="4;10;14;6;4" dur="1.6s" begin="0.48s" repeatCount="indefinite"/><animate attributeName="y" values="512;506;502;510;512" dur="1.6s" begin="0.48s" repeatCount="indefinite"/></rect>
+    <rect x="1102" y="504" width="6" height="12"><animate attributeName="height" values="2;4;8;2;2" dur="1.6s" begin="0.56s" repeatCount="indefinite"/><animate attributeName="y" values="514;512;508;514;514" dur="1.6s" begin="0.56s" repeatCount="indefinite"/></rect>
+    <rect x="1116" y="506" width="6" height="10"><animate attributeName="height" values="2;8;4;6;2" dur="1.6s" begin="0.64s" repeatCount="indefinite"/><animate attributeName="y" values="514;508;512;510;514" dur="1.6s" begin="0.64s" repeatCount="indefinite"/></rect>
+    <rect x="1130" y="508" width="6" height="8"><animate attributeName="height" values="2;6;2;4;2" dur="1.6s" begin="0.72s" repeatCount="indefinite"/><animate attributeName="y" values="514;510;514;512;514" dur="1.6s" begin="0.72s" repeatCount="indefinite"/></rect>
+    <rect x="1144" y="510" width="6" height="6"><animate attributeName="height" values="2;4;2;2;2" dur="1.6s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="y" values="514;512;514;514;514" dur="1.6s" begin="0.8s" repeatCount="indefinite"/></rect>
+  </g>
+
+  <line x1="1070" y1="526" x2="1070" y2="542" stroke="#5A6270" stroke-width="1.3" marker-end="url(#arch-ar)"/>
+  <rect x="980" y="544" width="180" height="58" rx="7" fill="#0E8F52" stroke="#04E762" stroke-width="1.8" filter="url(#arch-glow2)"/>
+  <text x="1070" y="572" fill="#E8E6E3" font-size="18" font-weight="bold" text-anchor="middle">y_i = aime
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="1.6s" repeatCount="indefinite"/>
+  </text>
+  <text x="1070" y="592" fill="#CFE7DD" font-size="10" text-anchor="middle">argmax of softmax</text>
+
+  <line x1="1070" y1="266" x2="1070" y2="378" stroke="#5A6270" stroke-width="1.3" marker-end="url(#arch-ar)"/>
+  <line x1="1160" y1="242" x2="1160" y2="186" stroke="#04E762" stroke-width="1.3"/>
+  <line x1="1070" y1="266" x2="1160" y2="242" stroke="#04E762" stroke-width="1.3"/>
+
+  <text x="60" y="452" fill="#6E747D" font-size="11">initial decoder state: s_0 = tanh( W_s * h_bwd_1 ) - comes from the first backward state, not the last</text>
+  <path d="M 91 382 L 30 382 L 30 60 L 965 60 L 965 149 L 978 149" fill="none" stroke="#04E762" stroke-width="1.2" stroke-dasharray="6 6" opacity="0.6">
+    <animate attributeName="stroke-dashoffset" values="0;-24" dur="1.5s" repeatCount="indefinite"/>
+  </path>
+
+  <rect x="60" y="640" width="62" height="34" rx="5" fill="#1A1D23" stroke="#5A6270"/>
+  <text x="91" y="661" fill="#7C8998" font-size="13" text-anchor="middle">＜/s＞</text>
+  <rect x="128" y="640" width="62" height="34" rx="5" fill="#1A1D23" stroke="#5A6270"/>
+  <text x="159" y="661" fill="#7C8998" font-size="13" text-anchor="middle">je</text>
+  <rect x="220" y="640" width="62" height="34" rx="5" fill="#0E8F52" stroke="#04E762" stroke-width="1.6"/>
+  <text x="251" y="661" fill="#E8E6E3" font-size="13" text-anchor="middle">aime</text>
+  <text x="300" y="661" fill="#6E747D" font-size="15">...</text>
+  <text x="60" y="696" fill="#6E747D" font-size="11">target so far - the softmax above picks the next chip, one step at a time</text>
+  <line x1="1070" y1="602" x2="251" y2="638" stroke="#04E762" stroke-width="1" stroke-dasharray="3 5" opacity="0.5"/>
+</g>
+</svg>

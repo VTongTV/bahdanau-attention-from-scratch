@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" role="img" aria-labelledby="pipe-t pipe-d">
+<title id="pipe-t">data pipeline - raw pairs to bucketed minibatches</title>
+<desc id="pipe-d">a sentence-pair stream flows left to right. tokenize splits words. the 30000-word shortlist maps rare words to unk. a length filter drops pairs over the cap (junk falls away). survivors land in the 1600-pair rebucket pool, sort by length, and cut into 20 batches of 80.</desc>
+
+<defs>
+  <radialGradient id="pipe-bg" cx="40%" cy="30%" r="85%"><stop offset="0%" stop-color="#15171C"/><stop offset="100%" stop-color="#08090C"/></radialGradient>
+  <pattern id="pipe-grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#1B1F26"/></pattern>
+  <linearGradient id="pipe-steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3C424D"/><stop offset="100%" stop-color="#191C23"/></linearGradient>
+  <linearGradient id="pipe-bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#04E762"/><stop offset="100%" stop-color="#0A6B3F"/></linearGradient>
+  <filter id="pipe-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <marker id="pipe-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7C8998"/></marker>
+  <marker id="pipe-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#04E762"/></marker>
+</defs>
+
+<rect width="1280" height="640" fill="url(#pipe-bg)"/>
+<rect width="1280" height="640" fill="url(#pipe-grid)"/>
+<text x="48" y="38" fill="#E8E6E3" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold">data pipeline - raw pairs become bucketed minibatches of 80</text>
+<text x="48" y="60" fill="#6E747D" font-family="Arial, Helvetica, sans-serif" font-size="12">a stream of sentence pairs walks left to right. tokenize. shortlist. length filter drops junk. survivors sort by length and form 20 batches.</text>
+
+<g font-family="Arial, Helvetica, sans-serif">
+  <text x="48" y="92" fill="#7C8998" font-size="11">raw sentence pairs</text>
+  <rect x="48" y="100" width="240" height="490" rx="8" fill="#101319" stroke="#3A4049" stroke-width="1.2"/>
+
+  <text x="320" y="92" fill="#7C8998" font-size="11">tokenize  moses-style</text>
+  <rect x="320" y="100" width="140" height="490" rx="8" fill="#101319" stroke="#3A4049" stroke-width="1.2"/>
+
+  <text x="500" y="92" fill="#7C8998" font-size="11">shortlist  top 30 000 words</text>
+  <rect x="500" y="100" width="180" height="490" rx="8" fill="#101319" stroke="#3A4049" stroke-width="1.2"/>
+
+  <text x="724" y="92" fill="#7C8998" font-size="11">length filter  cap 30 or 50</text>
+  <rect x="724" y="100" width="170" height="490" rx="8" fill="#101319" stroke="#3A4049" stroke-width="1.2"/>
+  <text x="730" y="610" fill="#6E747D" font-size="10">junk drops here - over the cap falls to the floor</text>
+
+  <text x="940" y="92" fill="#7C8998" font-size="11">rebucket pool  1600 pairs</text>
+  <rect x="940" y="100" width="140" height="490" rx="8" fill="#101319" stroke="#3A4049" stroke-width="1.2"/>
+
+  <text x="1116" y="92" fill="#7C8998" font-size="11">20 batches x 80</text>
+  <rect x="1116" y="100" width="118" height="490" rx="8" fill="#101319" stroke="#3A4049" stroke-width="1.2"/>
+
+  <text x="56" y="124" fill="#6E747D" font-size="10">en:the man likes dogs .</text>
+  <text x="56" y="140" fill="#6E747D" font-size="10">fr:l' homme aime les chiens .</text>
+  <rect x="56" y="150" width="224" height="50" rx="5" fill="url(#pipe-steel)" stroke="#5A6270"/>
+  <text x="168" y="180" fill="#E8E6E3" font-size="11" text-anchor="middle">pair 1 · 6/7 words</text>
+
+  <rect x="56" y="208" width="224" height="50" rx="5" fill="url(#pipe-steel)" stroke="#5A6270"/>
+  <text x="168" y="238" fill="#E8E6E3" font-size="11" text-anchor="middle">pair 2 · 12/14 words</text>
+
+  <rect x="56" y="266" width="224" height="50" rx="5" fill="url(#pipe-steel)" stroke="#5A6270"/>
+  <text x="168" y="296" fill="#E8E6E3" font-size="11" text-anchor="middle">pair 3 · 4/4 words</text>
+
+  <rect x="56" y="324" width="224" height="50" rx="5" fill="url(#pipe-steel)" stroke="#5A6270"/>
+  <text x="168" y="354" fill="#E8E6E3" font-size="11" text-anchor="middle">pair 4 · 33/38 words</text>
+
+  <rect x="56" y="382" width="224" height="50" rx="5" fill="url(#pipe-steel)" stroke="#5A6270"/>
+  <text x="168" y="412" fill="#E8E6E3" font-size="11" text-anchor="middle">pair 5 · 9/10 words</text>
+
+  <rect x="56" y="440" width="224" height="50" rx="5" fill="url(#pipe-steel)" stroke="#5A6270"/>
+  <text x="168" y="470" fill="#E8E6E3" font-size="11" text-anchor="middle">pair 6 · 18/22 words</text>
+
+  <rect x="56" y="498" width="224" height="50" rx="5" fill="url(#pipe-steel)" stroke="#5A6270"/>
+  <text x="168" y="528" fill="#E8E6E3" font-size="11" text-anchor="middle">pair 7 · 45/52 words</text>
+
+  <text x="328" y="124" fill="#6E747D" font-size="10">split on space, keep</text>
+  <text x="328" y="140" fill="#6E747D" font-size="10">apostrophes, utf-8</text>
+  <g fill="#7C8998" font-size="10">
+    <text x="328" y="180">the / man / likes</text>
+    <text x="328" y="222">l' / homme / aime</text>
+    <text x="328" y="264">je / vois / la</text>
+    <text x="328" y="306">...</text>
+    <text x="328" y="348">forest / grows</text>
+    <text x="328" y="390">le / chien / court</text>
+    <text x="328" y="432">long / sentence / here</text>
+    <text x="328" y="474">very / long / pair</text>
+    <text x="328" y="516">...</text>
+  </g>
+  <text x="328" y="566" fill="#6E747D" font-size="10">each token becomes a vocab id</text>
+
+  <text x="508" y="124" fill="#6E747D" font-size="10">30k most common per lang</text>
+  <text x="508" y="140" fill="#6E747D" font-size="10">uncommon -> [UNK]</text>
+  <g font-size="10" font-family="monospace">
+    <text x="508" y="180" fill="#E8E6E3">12 / 241 / 9887</text>
+    <text x="508" y="222" fill="#E8E6E3">9 / 142 / 27001</text>
+    <text x="508" y="264" fill="#E8E6E3">3 / 88 / 4122</text>
+    <text x="508" y="306" fill="#6E747D">...</text>
+    <text x="508" y="348" fill="#E8E6E3">7012 / 29998</text>
+    <text x="508" y="390" fill="#E8E6E3">19 / 277 / 6541</text>
+    <text x="508" y="432" fill="#C22B3F" font-family="Arial, Helvetica, sans-serif">37 / 42 / [UNK]</text>
+    <text x="508" y="474" fill="#C22B3F" font-family="Arial, Helvetica, sans-serif">29 / 51 / [UNK]</text>
+    <text x="508" y="516" fill="#6E747D" font-family="Arial, Helvetica, sans-serif">...</text>
+  </g>
+  <text x="508" y="566" fill="#6E747D" font-size="10">rare words become [UNK]</text>
+
+  <text x="732" y="124" fill="#6E747D" font-size="10">drop pairs over the cap</text>
+  <g font-size="10" font-family="monospace">
+    <text x="732" y="180" fill="#E8E6E3">6/7 ok</text>
+    <text x="732" y="222" fill="#E8E6E3">12/14 ok</text>
+    <text x="732" y="264" fill="#E8E6E3">4/4 ok</text>
+    <text x="732" y="306" fill="#C22B3F" font-family="Arial, Helvetica, sans-serif">33/38 DROP</text>
+    <text x="732" y="348" fill="#E8E6E3">9/10 ok</text>
+    <text x="732" y="390" fill="#E8E6E3">18/22 ok</text>
+    <text x="732" y="432" fill="#C22B3F" font-family="Arial, Helvetica, sans-serif">45/52 DROP</text>
+    <text x="732" y="474" fill="#6E747D" font-family="Arial, Helvetica, sans-serif">...</text>
+  </g>
+  <text x="732" y="516" fill="#6E747D" font-size="10">cap=30 mode 1, cap=50 mode 2</text>
+
+  <rect x="732" y="540" width="140" height="40" rx="6" fill="url(#pipe-steel)" stroke="#C22B3F" stroke-width="1.2" opacity="0.5"/>
+  <text x="802" y="564" fill="#C22B3F" font-size="11" text-anchor="middle">junk bin (dropped)</text>
+
+  <text x="948" y="124" fill="#6E747D" font-size="10">1600 pairs arrive</text>
+  <text x="948" y="140" fill="#6E747D" font-size="10">sort by length ascending</text>
+  <g font-size="9" font-family="monospace" fill="#7C8998">
+    <text x="948" y="180">4/4</text>
+    <text x="948" y="208">6/7</text>
+    <text x="948" y="236">9/10</text>
+    <text x="948" y="264">12/14</text>
+    <text x="948" y="292">18/22</text>
+    <text x="948" y="320">22/25</text>
+    <text x="948" y="348">25/28</text>
+    <text x="948" y="376">28/30</text>
+    <text x="948" y="520" fill="#6E747D" font-family="Arial, Helvetica, sans-serif">1600 pairs sorted, then cut</text>
+  </g>
+
+  <g stroke="#5A6270" stroke-width="1" fill="#0E8F52">
+    <rect x="1124" y="124" width="100" height="22" rx="3"/>
+    <rect x="1124" y="152" width="100" height="22" rx="3"/>
+    <rect x="1124" y="180" width="100" height="22" rx="3"/>
+    <rect x="1124" y="208" width="100" height="22" rx="3"/>
+    <rect x="1124" y="236" width="100" height="22" rx="3"/>
+    <rect x="1124" y="264" width="100" height="22" rx="3"/>
+    <rect x="1124" y="292" width="100" height="22" rx="3"/>
+    <rect x="1124" y="320" width="100" height="22" rx="3"/>
+    <rect x="1124" y="348" width="100" height="22" rx="3"/>
+    <rect x="1124" y="376" width="100" height="22" rx="3"/>
+    <rect x="1124" y="404" width="100" height="22" rx="3"/>
+    <rect x="1124" y="432" width="100" height="22" rx="3"/>
+    <rect x="1124" y="460" width="100" height="22" rx="3"/>
+    <rect x="1124" y="488" width="100" height="22" rx="3"/>
+    <rect x="1124" y="516" width="100" height="22" rx="3"/>
+    <rect x="1124" y="544" width="100" height="22" rx="3" fill="#161920" stroke="#5A6270"/>
+  </g>
+  <g fill="#E8E6E3" font-size="9" text-anchor="middle" font-family="monospace">
+    <text x="1174" y="139">b1·80</text><text x="1174" y="167">b2·80</text><text x="1174" y="195">b3·80</text>
+    <text x="1174" y="223">b4·80</text><text x="1174" y="251">b5·80</text><text x="1174" y="279">b6·80</text>
+    <text x="1174" y="307">b7·80</text><text x="1174" y="335">b8·80</text><text x="1174" y="363">b9·80</text>
+    <text x="1174" y="391">b10·80</text><text x="1174" y="419">b11·80</text><text x="1174" y="447">b12·80</text>
+    <text x="1174" y="475">b13·80</text><text x="1174" y="503">b14·80</text><text x="1174" y="531">b15·80</text>
+    <text x="1174" y="559" fill="#7C8998">...b20</text>
+  </g>
+
+  <g stroke="#5A6270" stroke-width="1" stroke-dasharray="3 3" fill="none" opacity="0.5">
+    <line x1="280" y1="170" x2="320" y2="430"/>
+    <line x1="460" y1="180" x2="500" y2="520"/>
+    <line x1="680" y1="350" x2="724" y2="380"/>
+    <line x1="894" y1="350" x2="940" y2="380"/>
+    <line x1="1080" y1="350" x2="1116" y2="380"/>
+  </g>
+
+  <g>
+    <rect x="56" y="150" width="224" height="50" rx="5" fill="#04E762" opacity="0">
+      <animate attributeName="opacity" values="0;0.35;0.35;0" keyTimes="0;0.05;0.95;1" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="x" values="56;328;508;732;732;1080;1124;1124" keyTimes="0;0.12;0.24;0.36;0.40;0.55;0.70;0.72" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="width" values="224;120;160;150;150;120;100;100" keyTimes="0;0.12;0.24;0.36;0.40;0.55;0.70;0.72" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="150;180;180;348;540;348;124;544" keyTimes="0;0.12;0.24;0.36;0.42;0.55;0.70;0.95" dur="6s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="56" y="150" width="6" height="50" rx="2" fill="#04E762" opacity="0">
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.95;1" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="x" values="56;328;508;732;732;1080;1124;1124" keyTimes="0;0.12;0.24;0.36;0.40;0.55;0.70;0.72" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="150;180;180;348;540;348;124;544" keyTimes="0;0.12;0.24;0.36;0.42;0.55;0.70;0.95" dur="6s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <g>
+    <rect x="1124" y="124" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="0.78s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="0.78s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="152" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="0.85s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="0.85s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="180" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="0.92s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="0.92s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="208" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="0.99s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="0.99s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="236" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.06s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.06s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="264" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.13s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.13s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="292" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.20s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.20s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="320" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.27s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.27s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="348" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.34s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.34s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="376" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.41s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.41s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="404" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.48s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.48s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="432" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.55s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.55s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="460" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.62s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.62s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="488" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.69s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.69s" dur="6s" repeatCount="indefinite"/></rect>
+    <rect x="1124" y="516" width="100" height="22" rx="3" fill="#04E762" opacity="0"><animate attributeName="opacity" values="0;0.95" keyTimes="0;1" begin="1.76s" dur="0.1s" fill="freeze"/><animate attributeName="opacity" values="0.95;0.95;0" keyTimes="0;0.9;1" begin="1.76s" dur="6s" repeatCount="indefinite"/></rect>
+  </g>
+</g>
+</svg>

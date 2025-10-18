@@ -1,0 +1,157 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-labelledby="gru-t gru-d">
+<title id="gru-t">gated hidden unit - encoder and decoder variants</title>
+<desc id="gru-d">the gru of cho 2014. left column shows the encoder cell. it has no context input. right column shows the decoder cell. it adds context c_i to the candidate, the update gate z, and the reset gate r. the update gate z mixes the previous state s_{i-1} and the candidate s_tilde into the new state s_i. the reset gate r gates the previous state into the candidate. both gates are sigmoid, so their values stay in 0..1. tanh keeps the candidate in -1..1.</desc>
+
+<defs>
+  <radialGradient id="gru-bg3" cx="40%" cy="30%" r="85%">
+    <stop offset="0%" stop-color="#15171C"/><stop offset="100%" stop-color="#08090C"/>
+  </radialGradient>
+  <pattern id="gru-grid3" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#1B1F26"/></pattern>
+  <linearGradient id="gru-st34" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3C424D"/><stop offset="100%" stop-color="#191C23"/></linearGradient>
+  <linearGradient id="gru-gr3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#04E762"/><stop offset="100%" stop-color="#0A6B3F"/></linearGradient>
+  <radialGradient id="gru-valveOpen" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#04E762" stop-opacity="0.95"/><stop offset="100%" stop-color="#04E762" stop-opacity="0"/></radialGradient>
+  <filter id="gru-gl3" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <marker id="gru-ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7C8998"/></marker>
+  <marker id="gru-ag3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#04E762"/></marker>
+</defs>
+
+<rect width="1000" height="620" fill="url(#gru-bg3)"/>
+<rect width="1000" height="620" fill="url(#gru-grid3)"/>
+<text x="40" y="36" fill="#E8E6E3" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold">gated hidden unit - the same cell, two jobs</text>
+<text x="40" y="58" fill="#6E747D" font-family="Arial, Helvetica, sans-serif" font-size="12">left: encoder (no context). right: decoder (adds c_i to each gate and to the candidate). gates and mixer pulse live.</text>
+
+<g font-family="Arial, Helvetica, sans-serif">
+  <text x="60" y="90" fill="#7C8998" font-size="13">ENCODER cell</text>
+  <rect x="60" y="100" width="380" height="490" rx="10" fill="#101319" stroke="#5A6270" stroke-width="1.2"/>
+
+  <text x="560" y="90" fill="#7C8998" font-size="13">DECODER cell</text>
+  <rect x="560" y="100" width="380" height="490" rx="10" fill="#101319" stroke="#04E762" stroke-width="1.2" filter="url(#gru-gl3)"/>
+
+  <text x="80" y="130" fill="#7C8998" font-size="11">inputs</text>
+  <rect x="80" y="140" width="120" height="34" rx="5" fill="url(#gru-st34)" stroke="#5A6270"/>
+  <text x="140" y="162" fill="#E8E6E3" font-size="12" text-anchor="middle">e(x_j)</text>
+  <text x="220" y="162" fill="#6E747D" font-size="10">embedding, m=620</text>
+
+  <rect x="80" y="186" width="120" height="34" rx="5" fill="url(#gru-st34)" stroke="#5A6270"/>
+  <text x="140" y="208" fill="#E8E6E3" font-size="12" text-anchor="middle">s_{j-1}</text>
+  <text x="220" y="208" fill="#6E747D" font-size="10">previous state, n=1000</text>
+
+  <text x="80" y="240" fill="#3A4049" font-size="11">no context input here</text>
+
+  <text x="580" y="130" fill="#7C8998" font-size="11">inputs</text>
+  <rect x="580" y="140" width="120" height="34" rx="5" fill="url(#gru-st34)" stroke="#5A6270"/>
+  <text x="640" y="162" fill="#E8E6E3" font-size="12" text-anchor="middle">e(y_{i-1})</text>
+  <text x="720" y="162" fill="#6E747D" font-size="10">target embedding, m=620</text>
+
+  <rect x="580" y="186" width="120" height="34" rx="5" fill="url(#gru-st34)" stroke="#5A6270"/>
+  <text x="640" y="208" fill="#E8E6E3" font-size="12" text-anchor="middle">s_{i-1}</text>
+  <text x="720" y="208" fill="#6E747D" font-size="10">previous state, n=1000</text>
+
+  <rect x="580" y="232" width="120" height="44" rx="6" fill="#0E8F52" stroke="#04E762" stroke-width="1.4" filter="url(#gru-gl3)"/>
+  <text x="640" y="250" fill="#E8E6E3" font-size="13" text-anchor="middle">c_i</text>
+  <text x="640" y="267" fill="#CFE7DD" font-size="9" text-anchor="middle">2n = 2000, from attention</text>
+  <text x="720" y="263" fill="#04E762" font-size="10">flows into all three gates</text>
+
+  <text x="80" y="280" fill="#6E747D" font-size="10">reset gate r = sigmoid(W_r e + U_r s + C_r c)</text>
+  <rect x="80" y="294" width="340" height="60" rx="7" fill="#1A1D23" stroke="#5A6270" stroke-width="1.2"/>
+  <text x="250" y="316" fill="#E8E6E3" font-size="13" text-anchor="middle">reset gate  r</text>
+  <text x="250" y="336" fill="#6E747D" font-size="10" text-anchor="middle">valve opens 0..1, gates s into candidate</text>
+  <circle cx="390" cy="324" r="14" fill="url(#gru-valveOpen)" opacity="0.4">
+    <animate attributeName="opacity" values="0.2;0.9;0.4;0.9;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="390" cy="324" r="7" fill="#04E762">
+    <animate attributeName="r" values="5;11;5;9;5" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" repeatCount="indefinite"/>
+  </circle>
+
+  <text x="580" y="280" fill="#04E762" font-size="10">reset gate r = sigmoid(W_r e + U_r s + C_r c)</text>
+  <rect x="580" y="294" width="340" height="60" rx="7" fill="#1A1D23" stroke="#04E762" stroke-width="1.2" filter="url(#gru-gl3)"/>
+  <text x="750" y="316" fill="#E8E6E3" font-size="13" text-anchor="middle">reset gate  r</text>
+  <text x="750" y="336" fill="#6E747D" font-size="10" text-anchor="middle">valve opens 0..1, gates s into candidate</text>
+  <circle cx="890" cy="324" r="14" fill="url(#gru-valveOpen)" opacity="0.4">
+    <animate attributeName="opacity" values="0.2;0.9;0.4;0.9;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="890" cy="324" r="7" fill="#04E762">
+    <animate attributeName="r" values="5;11;5;9;5" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+
+  <text x="80" y="372" fill="#6E747D" font-size="10">candidate s_tilde = tanh(W e + U (r * s) + C c)</text>
+  <rect x="80" y="386" width="340" height="60" rx="7" fill="#1A1D23" stroke="#5A6270" stroke-width="1.2"/>
+  <text x="250" y="408" fill="#E8E6E3" font-size="13" text-anchor="middle">candidate  s_tilde = tanh(...)</text>
+  <text x="250" y="426" fill="#6E747D" font-size="10" text-anchor="middle">r shrinks the previous state before tanh</text>
+  <rect x="366" y="404" width="44" height="24" rx="3" fill="#0E8F52" stroke="#04E762">
+    <animate attributeName="opacity" values="0.55;1;0.7;1;0.55" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" repeatCount="indefinite"/>
+  </rect>
+  <text x="388" y="442" fill="#04E762" font-size="10" text-anchor="middle">tanh pulse</text>
+
+  <text x="580" y="372" fill="#04E762" font-size="10">candidate s_tilde = tanh(W e + U (r * s) + C c)</text>
+  <rect x="580" y="386" width="340" height="60" rx="7" fill="#1A1D23" stroke="#04E762" stroke-width="1.2" filter="url(#gru-gl3)"/>
+  <text x="750" y="408" fill="#E8E6E3" font-size="13" text-anchor="middle">candidate  s_tilde = tanh(...)</text>
+  <text x="750" y="426" fill="#6E747D" font-size="10" text-anchor="middle">r shrinks the previous state; c adds context</text>
+  <rect x="728" y="404" width="44" height="24" rx="3" fill="#0E8F52" stroke="#04E762">
+    <animate attributeName="opacity" values="0.55;1;0.7;1;0.55" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" begin="0.6s" repeatCount="indefinite"/>
+  </rect>
+  <text x="750" y="442" fill="#04E762" font-size="10" text-anchor="middle">tanh pulse</text>
+
+  <text x="80" y="464" fill="#6E747D" font-size="10">update gate z = sigmoid(W_z e + U_z s + C_z c)</text>
+  <rect x="80" y="478" width="340" height="44" rx="7" fill="#1A1D23" stroke="#5A6270" stroke-width="1.2"/>
+  <text x="250" y="498" fill="#E8E6E3" font-size="13" text-anchor="middle">update gate  z</text>
+  <text x="250" y="514" fill="#6E747D" font-size="10" text-anchor="middle">valve opens 0..1, chooses mix amount</text>
+  <circle cx="390" cy="500" r="14" fill="url(#gru-valveOpen)" opacity="0.4">
+    <animate attributeName="opacity" values="0.2;0.9;0.4;0.9;0.2" keyTimes="0;0.5;0.65;0.85;1" dur="2.6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="390" cy="500" r="7" fill="#04E762">
+    <animate attributeName="r" values="5;9;5;11;5" keyTimes="0;0.5;0.65;0.85;1" dur="2.6s" repeatCount="indefinite"/>
+  </circle>
+
+  <text x="580" y="464" fill="#04E762" font-size="10">update gate z = sigmoid(W_z e + U_z s + C_z c)</text>
+  <rect x="580" y="478" width="340" height="44" rx="7" fill="#1A1D23" stroke="#04E762" stroke-width="1.2" filter="url(#gru-gl3)"/>
+  <text x="750" y="498" fill="#E8E6E3" font-size="13" text-anchor="middle">update gate  z</text>
+  <text x="750" y="514" fill="#6E747D" font-size="10" text-anchor="middle">valve opens 0..1, chooses mix amount</text>
+  <circle cx="890" cy="500" r="14" fill="url(#gru-valveOpen)" opacity="0.4">
+    <animate attributeName="opacity" values="0.2;0.9;0.4;0.9;0.2" keyTimes="0;0.5;0.65;0.85;1" dur="2.6s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="890" cy="500" r="7" fill="#04E762">
+    <animate attributeName="r" values="5;9;5;11;5" keyTimes="0;0.5;0.65;0.85;1" dur="2.6s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+
+  <text x="80" y="540" fill="#6E747D" font-size="10">state mixer: s_j = (1-z) s_{j-1} + z s_tilde</text>
+  <rect x="80" y="554" width="340" height="28" rx="5" fill="#101319" stroke="#3A4049"/>
+  <rect x="88" y="560" width="160" height="16" rx="2" fill="#5A6270">
+    <animate attributeName="width" values="160;64;160;108;160" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="252" y="560" width="160" height="16" rx="2" fill="url(#gru-gr3)">
+    <animate attributeName="width" values="160;256;160;212;160" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" repeatCount="indefinite"/>
+    <animate attributeName="x" values="252;156;252;200;252" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" repeatCount="indefinite"/>
+  </rect>
+  <text x="250" y="598" fill="#7C8998" font-size="9" text-anchor="middle">grey = s_{j-1} kept, green = s_tilde written - z sets the split</text>
+
+  <text x="580" y="540" fill="#04E762" font-size="10">state mixer: s_i = (1-z) s_{i-1} + z s_tilde</text>
+  <rect x="580" y="554" width="340" height="28" rx="5" fill="#101319" stroke="#3A4049"/>
+  <rect x="588" y="560" width="160" height="16" rx="2" fill="#5A6270">
+    <animate attributeName="width" values="160;64;160;108;160" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" begin="0.6s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="752" y="560" width="160" height="16" rx="2" fill="url(#gru-gr3)">
+    <animate attributeName="width" values="160;256;160;212;160" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" begin="0.6s" repeatCount="indefinite"/>
+    <animate attributeName="x" values="752;656;752;700;752" keyTimes="0;0.25;0.5;0.75;1" dur="2.6s" begin="0.6s" repeatCount="indefinite"/>
+  </rect>
+  <text x="750" y="598" fill="#7C8998" font-size="9" text-anchor="middle">grey = s_{i-1} kept, green = s_tilde written - z sets the split</text>
+
+  <line x1="140" y1="174" x2="140" y2="186" stroke="#7C8998" stroke-width="1.2" marker-end="url(#gru-ar3)"/>
+  <line x1="200" y1="294" x2="170" y2="252" stroke="#7C8998" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="200" y1="386" x2="170" y2="340" stroke="#7C8998" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="200" y1="478" x2="170" y2="346" stroke="#7C8998" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <line x1="640" y1="174" x2="640" y2="186" stroke="#7C8998" stroke-width="1.2" marker-end="url(#gru-ar3)"/>
+  <line x1="700" y1="294" x2="672" y2="252" stroke="#04E762" stroke-width="1.2" marker-end="url(#gru-ag3)"/>
+  <line x1="700" y1="386" x2="672" y2="340" stroke="#04E762" stroke-width="1.2" marker-end="url(#gru-ag3)"/>
+  <line x1="700" y1="478" x2="672" y2="346" stroke="#04E762" stroke-width="1.2" marker-end="url(#gru-ag3)"/>
+
+  <line x1="420" y1="416" x2="388" y2="416" stroke="#04E762" stroke-width="1.2" opacity="0.7"/>
+  <line x1="420" y1="500" x2="388" y2="506" stroke="#04E762" stroke-width="1.2" opacity="0.7"/>
+  <line x1="420" y1="554" x2="388" y2="554" stroke="#04E762" stroke-width="1.2" opacity="0.7"/>
+
+  <line x1="920" y1="416" x2="888" y2="416" stroke="#04E762" stroke-width="1.2" opacity="0.7"/>
+  <line x1="920" y1="500" x2="888" y2="506" stroke="#04E762" stroke-width="1.2" opacity="0.7"/>
+  <line x1="920" y1="554" x2="888" y2="554" stroke="#04E762" stroke-width="1.2" opacity="0.7"/>
+</g>
+</svg>

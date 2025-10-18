@@ -8,6 +8,7 @@ PLAN.md
 AUDIT.md
 INITIATION_PROMPT.md
 *.plan.md
+REPORT_storyboard.md
 
 # data and runs
 /data/
@@ -25,6 +26,11 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+
+# node (svg tooling artifact)
+node_modules/
+package.json
+package-lock.json
 
 # os and editor
 .DS_Store
